@@ -2,18 +2,14 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ödeme</title>
 
 <style>
-body{font-family:Arial;padding:20px;background:#f4f6f8}
+body{font-family:Arial;padding:10px;background:#f4f6f8}
 
-.box{
-background:white;
-padding:15px;
-border-radius:10px;
-}
-
-input{
+input,textarea{
 width:100%;
 padding:10px;
 margin:5px 0;
@@ -25,46 +21,54 @@ padding:10px;
 background:#00d4ff;
 border:none;
 font-weight:bold;
-cursor:pointer;
-border-radius:8px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>💳 Ödeme</h2>
-
-<div class="box">
+<h2>Ödeme</h2>
 
 <input id="name" placeholder="Ad">
-<input id="address" placeholder="Adres">
+<input id="email" placeholder="Email">
 <input id="phone" placeholder="Telefon">
+<textarea id="address" placeholder="Adres"></textarea>
 
-<button onclick="pay()">Sipariş Ver</button>
-
-</div>
+<button onclick="send()">Sipariş Gönder</button>
 
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-function pay(){
+/*
+📧 mailto sistemi:
+gerçek mail göndermez
+mail uygulamasını açar
+*/
+function send(){
 
-let order = {
-id:Date.now(),
-items:cart,
-name:name.value,
-address:address.value
-};
+let items = cart.map(p=>{
+return p.name+" - "+p.price+" TL";
+}).join("\n");
 
-let orders = JSON.parse(localStorage.getItem("orders")) || [];
-orders.push(order);
+let total = cart.reduce((a,b)=>a+Number(b.price),0);
 
-localStorage.setItem("orders",JSON.stringify(orders));
+let subject = "Yeni Sipariş";
+let body =
+`Ad: ${name.value}
+Email: ${email.value}
+Telefon: ${phone.value}
+Adres: ${address.value}
+
+ÜRÜNLER:
+${items}
+
+TOPLAM: ${total}`;
+
+let mail = `mailto:YOURMAIL@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
 localStorage.removeItem("cart");
 
-alert("Sipariş alındı");
-window.location.href="index.html";
+location.href = mail;
 }
 </script>
 
