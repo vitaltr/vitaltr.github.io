@@ -2,55 +2,53 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Sepet</title>
 
 <style>
-body{font-family:Arial;background:#f3f5f7;padding:20px}
+body{font-family:Arial;background:#f3f5f7;padding:10px}
 
 .item{
 background:white;
 padding:10px;
 margin:10px 0;
-border-radius:10px;
+border-radius:8px;
 display:flex;
 justify-content:space-between;
+}
+
+.total{
+font-size:20px;
+font-weight:bold;
+margin-top:10px;
 }
 
 button{
 background:red;
 color:white;
 border:none;
-padding:6px;
+padding:5px;
 border-radius:6px;
-cursor:pointer;
-}
-
-.total{
-font-size:20px;
-font-weight:bold;
-margin-top:20px;
 }
 
 .checkout{
 background:#00d4ff;
-border:none;
-padding:10px;
 width:100%;
+padding:10px;
 font-weight:bold;
-cursor:pointer;
-border-radius:8px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>🛒 Sepet</h2>
+<h2>Sepet</h2>
 
 <div id="list"></div>
 <div class="total" id="total"></div>
 
-<button class="checkout" onclick="checkout()">Ödeme</button>
+<button class="checkout" onclick="go()">Ödeme</button>
 
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -66,11 +64,8 @@ sum += Number(p.price);
 
 box.innerHTML+=`
 <div class="item">
-<div>
-<b>${p.name}</b><br>
-${p.price} TL
-</div>
-<button onclick="del(${i})">Sil</button>
+<div>${p.name}<br>${p.price} TL</div>
+<button onclick="del(${i})">X</button>
 </div>`;
 });
 
@@ -83,8 +78,8 @@ localStorage.setItem("cart",JSON.stringify(cart));
 render();
 }
 
-function checkout(){
-window.location.href="checkout.html";
+function go(){
+location.href="checkout.html";
 }
 
 render();
