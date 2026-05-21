@@ -30,6 +30,7 @@ color:white;
 border:none;
 padding:5px;
 border-radius:6px;
+cursor:pointer;
 }
 
 .checkout{
@@ -65,7 +66,7 @@ sum += Number(p.price);
 box.innerHTML+=`
 <div class="item">
 <div>${p.name}<br>${p.price} TL</div>
-<button onclick="del(${i})">X</button>
+<button onclick="del(${i})">Sil</button>
 </div>`;
 });
 
