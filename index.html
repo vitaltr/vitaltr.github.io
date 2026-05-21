@@ -1,215 +1,28 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinamik Çoklu Sayfa Yönetim Sistemi</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        body { 
-            background: #f1f1f1; color: #333; padding-bottom: 60px; 
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-        }
-        /* ÜST BAR VE NAVİGASYON */
-        .ps-header { background: #fff; border-bottom: 2px solid #24b9d7; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 22px; font-weight: bold; color: #232323; letter-spacing: 1px; }
-        .logo span { color: #24b9d7; }
-        .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-        .nav-btn { padding: 8px 16px; border: 1px solid #ccc; background: #fff; font-size: 13px; font-weight: bold; color: #333; cursor: pointer; border-radius: 4px; transition: all 0.2s; }
-        .nav-btn:hover { background: #f6f6f6; border-color: #232323; }
-        .nav-btn.active { background: #24b9d7; color: white; border-color: #24b9d7; }
-        .header-cart { background: #232323; color: white; padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: bold; }
-        
-        /* ANA PANEL DÜZENİ */
-        .main-content { display: flex; flex-direction: column; align-items: center; padding: 30px 20px; gap: 30px; }
-        .page-panel { display: none; background: white; grid-template-columns: 45% 55%; max-width: 950px; width: 100%; border: 1px solid #e5e5e5; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .page-panel.active { display: grid; }
-        
-        /* GÖRSEL VE BİLGİ ALANLARI */
-        .images-container { padding: 30px; display: flex; align-items: center; justify-content: center; background: #fff; border-right: 1px solid #f1f1f1; }
-        .images-container img { max-width: 100%; max-height: 350px; height: auto; border: 1px solid #f1f1f1; padding: 10px; background: #fff; border-radius: 4px; object-fit: contain; pointer-events: none; }
-        .product-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
-        h1 { font-size: 24px; font-weight: 600; color: #232323; margin-bottom: 5px; }
-        .reference { font-size: 11px; color: #7a7a7a; margin-bottom: 12px; }
-        .price-block { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f1f1f1; }
-        .current-price { font-size: 24px; font-weight: bold; color: #232323; }
-        
-        /* STOK VE VARYANTLAR */
-        .availability { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold; color: #4cbb6c; margin-bottom: 15px; }
-        .availability-icon { width: 8px; height: 8px; background: #4cbb6c; border-radius: 50%; }
-        .variant-line { display: flex; align-items: center; margin-bottom: 10px; }
-        .variant-label { width: 120px; font-size: 13px; font-weight: bold; color: #414141; }
-        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
-        .ps-btn { padding: 6px 12px; border: 1px solid #ccc; background: #fff; font-size: 12px; color: #333; cursor: pointer; border-radius: 3px; }
-        .ps-btn:hover { border-color: #232323; }
-        .ps-btn.active { border-color: #24b9d7; background: #24b9d7; color: #fff; font-weight: bold; }
-        .custom-input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; width: 180px; outline: none; }
-        .custom-input:focus { border-color: #24b9d7; }
-        
-        /* ADET VE SEPETE EKLE */
-        .add-to-cart-row { display: flex; gap: 15px; align-items: center; padding-top: 15px; border-top: 1px solid #f1f1f1; }
-        .qty-input { width: 55px; padding: 8px; border: 1px solid #ccc; text-align: center; font-size: 14px; border-radius: 3px; }
-        .ps-add-btn { flex: 1; padding: 12px 20px; background: #24b9d7; color: white; border: none; border-radius: 3px; font-size: 14px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .ps-add-btn:hover { background: #1da1bc; }
-        .ps-summary { background: #f8f9fa; border: 1px solid #ededed; padding: 8px; font-size: 12px; margin-top: 12px; color: #666; border-radius: 3px; }
-        
-        /* SEPET TABLOSU (CART VIEW) */
-        .cart-section { background: white; max-width: 950px; width: 100%; border: 1px solid #e5e5e5; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 25px; }
-        .cart-title { font-size: 18px; font-weight: bold; border-bottom: 2px solid #f1f1f1; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
-        .cart-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .cart-table th, .cart-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        .cart-table th { background: #f8f9fa; font-weight: bold; color: #555; }
-        .cart-item-meta { font-size: 11px; color: #777; display: block; margin-top: 2px; }
-        .cart-total-row { font-size: 16px; font-weight: bold; text-align: right; padding-top: 15px; color: #232323; }
-        .empty-msg { text-align: center; color: #999; font-style: italic; padding: 20px 0; }
-        .remove-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-weight: bold; font-size: 16px; }
-        
-        @media (max-width: 768px) { .ps-header { flex-direction: column; gap: 15px; } .page-panel { grid-template-columns: 1fr; } .images-container { border-right: none; border-bottom: 1px solid #f1f1f1; } .variant-line { flex-direction: column; align-items: flex-start; gap: 5px; } }
-    </style>
+<meta charset="UTF-8">
+<title>VITAL SHOP</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="ps-header">
-    <div class="logo">VITAL<span>SHOP</span></div>
-    <div class="nav-tabs" id="main-nav-tabs"></div>
-    <div class="header-cart" id="cart-badge">Sepetim (0)</div>
+<header class="topbar">
+  <div class="logo">VITAL<span>SHOP</span></div>
+
+  <div class="menu" id="menu"></div>
+
+  <div class="cart">
+    🛒 Sepet (<span id="cartCount">0</span>)
+  </div>
 </header>
 
-<main class="main-content">
-    <div id="product-panel-wrapper" style="width: 100%; display: flex; justify-content: center;"></div>
-    <section class="cart-section">
-        <div class="cart-title"><span>Alışveriş Sepetiniz</span></div>
-        <div id="cart-table-wrapper"><div class="empty-msg">Sepetiniz şu anda boş.</div></div>
-    </section>
-</main>
+<main id="app"></main>
 
-<script>
-let sayfaAyarlari = [];
-let cart = [];
-let activePageId = null;
+<button class="order-btn" onclick="sendOrder()">
+  📦 Siparişi Gönder
+</button>
 
-// GÜVENLİK VE GİZLEME KALKANI
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) return false; // Ctrl+Shift+I/J/C
-    if (e.ctrlKey && [85, 83].includes(e.keyCode)) return false; // Ctrl+U / Ctrl+S
-};
-
-// JSON VERİSİNİ ÇEKEN DİNAMİK ALTYAPI
-async function loadStoreData() {
-    try {
-        const response = await fetch('urunler.json?v=' + Math.random());
-        sayfaAyarlari = await response.json();
-        initStore();
-    } catch (error) {
-        document.getElementById("product-panel-wrapper").innerHTML = "<p style='padding:20px; color:red;'>urunler.json bulunamadı veya biçim hatası var.</p>";
-    }
-}
-
-function initStore() {
-    const navTabs = document.getElementById("main-nav-tabs");
-    const wrapper = document.getElementById("product-panel-wrapper");
-    navTabs.innerHTML = ""; wrapper.innerHTML = "";
-
-    const aktifSayfalar = sayfaAyarlari.filter(s => s.aktif);
-    if(aktifSayfalar.length === 0) {
-        wrapper.innerHTML = "<p style='color:#999; padding:40px;'>Şu anda yayında ürün bulunmamaktadır.</p>";
-        return;
-    }
-
-    if(!activePageId || !aktifSayfalar.find(s => s.id === activePageId)) {
-        activePageId = aktifSayfalar[0].id;
-    }
-
-    aktifSayfalar.forEach((sayfa) => {
-        let btn = document.createElement("button");
-        btn.className = `nav-btn ${sayfa.id === activePageId ? 'active' : ''}`;
-        btn.innerText = sayfa.title;
-        btn.onclick = () => switchPage(sayfa.id);
-        navTabs.appendChild(btn);
-
-        let panelDiv = document.createElement("div");
-        panelDiv.id = `panel-${sayfa.id}`;
-        panelDiv.className = `page-panel ${sayfa.id === activePageId ? 'active' : ''}`;
-        panelDiv.setAttribute("data-base", sayfa.basePrice);
-        panelDiv.setAttribute("data-product-name", sayfa.name);
-
-        let optButtonsHtml = sayfa.opts.map((o, idx) => 
-            `<button class="ps-btn ${idx === 0 ? 'active' : ''}" data-name="${o.n}" data-cost="${o.p}" onclick="setOpt(this)">${o.n} ${o.p > 0 ? `(+${o.p} TL)` : ''}</button>`
-        ).join('');
-
-        panelDiv.innerHTML = `
-            <div class="images-container"><img src="${sayfa.img}" alt="${sayfa.name}" onerror="this.src='https://picsum.photos'"></div>
-            <div class="product-info">
-                <h1>${sayfa.name}</h1>
-                <div class="reference">Referans: ${sayfa.ref}</div>
-                <div class="price-block"><span class="current-price class-total">${sayfa.basePrice.toFixed(2)} TL</span></div>
-                <div class="availability"><span class="availability-icon"></span><span>Stokta Var</span></div>
-                <div class="product-variants">
-                    <div class="variant-line"><span class="variant-label">${sayfa.label}</span><div class="btn-group">${optButtonsHtml}</div></div>
-                    <div class="variant-line"><span class="variant-label">Kişiselleştirme</span><input type="text" class="custom-input" placeholder="${sayfa.inputHint}" oninput="updatePrice(this)"></div>
-                </div>
-                <div class="add-to-cart-row">
-                    <input type="number" class="qty-input" value="1" min="1" oninput="updatePrice(this)">
-                    <button class="ps-add-btn" onclick="addToCart(this)">Sepete Ekle</button>
-                </div>
-                <div class="ps-summary">Seçim Hazır | Adet: 1</div>
-            </div>
-        `;
-        wrapper.appendChild(panelDiv);
-    });
-}
-
-function switchPage(pageId) { activePageId = pageId; initStore(); }
-function setOpt(element) { let buttons = element.parentElement.getElementsByClassName('ps-btn'); for(let b of buttons) b.classList.remove('active'); element.classList.add('active'); updatePrice(element); }
-
-function updatePrice(element) {
-    let panel = element.closest('.page-panel');
-    let base = parseFloat(panel.getAttribute('data-base'));
-    let activeBtn = panel.querySelector('.ps-btn.active');
-    let optPrice = activeBtn ? parseFloat(activeBtn.getAttribute('data-cost') || 0) : 0;
-    let optName = activeBtn ? activeBtn.getAttribute('data-name') : 'Standart';
-    let qty = parseInt(panel.querySelector('.qty-input').value) || 1; if (qty < 1) qty = 1;
-    let textInput = panel.querySelector('.custom-input').value;
-    let textSummary = textInput ? ` | İsim: "${textInput}"` : '';
-    let total = (base + optPrice) * qty;
-    panel.querySelector('.class-total').innerText = total.toFixed(2) + " TL";
-    panel.querySelector('.ps-summary').innerText = `Seçim: ${optName}${textSummary} | Adet: ${qty}`;
-}
-
-function addToCart(button) {
-    let panel = button.closest('.page-panel');
-    let productName = panel.getAttribute('data-product-name');
-    let base = parseFloat(panel.getAttribute('data-base'));
-    let activeBtn = panel.querySelector('.ps-btn.active');
-    let optPrice = activeBtn ? parseFloat(activeBtn.getAttribute('data-cost') || 0) : 0;
-    let optName = activeBtn ? activeBtn.getAttribute('data-name') : 'Standart';
-    let qty = parseInt(panel.querySelector('.qty-input').value) || 1;
-    let textInput = panel.querySelector('.custom-input').value;
-    cart.push({ id: Date.now() + Math.random(), name: productName, option: optName, customText: textInput, quantity: qty, total: (base + optPrice) * qty });
-    renderCart();
-}
-
-function removeFromCart(id) { cart = cart.filter(item => item.id !== id); renderCart(); }
-
-function renderCart() {
-    let wrapper = document.getElementById('cart-table-wrapper');
-    let badge = document.getElementById('cart-badge');
-    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    badge.innerText = `Sepetim (${totalItems})`;
-    if(cart.length === 0) { wrapper.innerHTML = '<div class="empty-msg">Sepetiniz şu anda boş.</div>'; return; }
-    let html = `<table class="cart-table"><thead><tr><th>Ürün Adı</th><th>Seçenekler</th><th>Adet</th><th>Toplam Tutar</th><th>İşlem</th></tr></thead><tbody>`;
-    let grandTotal = 0;
-    cart.forEach(item => {
-        grandTotal += item.total;
-        html += `<tr><td><strong>${item.name}</strong></td><td>${item.option} ${item.customText ? `<span class="cart-item-meta">Yazı: "${item.customText}"</span>` : ''}</td><td>${item.quantity} Adet</td><td style="color:#4cbb6c; font-weight:bold;">${item.total.toFixed(2)} TL</td><td><button class="remove-btn" onclick="removeFromCart(${item.id})">×</button></td></tr>`;
-    });
-    html += `</tbody></table><div class="cart-total-row">Genel Toplam: <span style="color:#24b9d7">${grandTotal.toFixed(2)} TL</span></div>`;
-    wrapper.innerHTML = html;
-}
-
-loadStoreData();
-</script>
+<script src="js/shop.js"></script>
 </body>
 </html>
