@@ -1,0 +1,77 @@
+[
+  {
+    "id": "p1",
+    "aktif": true,
+    "title": "1. Sayfa",
+    "name": "PCB Tasarım İstasyonu - Paket 1",
+    "ref": "REF-001",
+    "basePrice": 450,
+    "img": "images/1.jpg", 
+    "label": "Klavye Düzeni",
+    "opts": [
+      { "n": "Türkçe Q", "p": 0 },
+      { "n": "İngilizce", "p": 20 }
+    ],
+    "inputHint": "Yazılacak isim"
+  },
+  {
+    "id": "p2",
+    "aktif": true,
+    "title": "2. Sayfa",
+    "name": "Gömülü Sistem Modülü - Paket 2",
+    "ref": "REF-002",
+    "basePrice": 600,
+    "img": "images/2.jpg",
+    "label": "Hafıza Kapasitesi",
+    "opts": [
+      { "n": "16 GB", "p": 0 },
+      { "n": "32 GB", "p": 50 }
+    ],
+    "inputHint": "Özel seri no yazın"
+  },
+  {
+    "id": "p3",
+    "aktif": true,
+    "title": "3. Sayfa",
+    "name": "3D Modelleme Mekanik Kasa - Paket 3",
+    "ref": "REF-003",
+    "basePrice": 750,
+    "img": "images/3.jpg",
+    "label": "Malzeme Türü",
+    "opts": [
+      { "n": "Standart Plastik", "p": 0 },
+      { "n": "Alüminyum Gövde", "p": 150 }
+    ],
+    "inputHint": "Kasa üstüne kazınacak metin"
+  },
+  {
+    "id": "p4",
+    "aktif": true,
+    "title": "4. Sayfa",
+    "name": "Full Stack IoT Entegrasyonu - Paket 4",
+    "ref": "REF-004",
+    "basePrice": 1200,
+    "img": "images/4.jpg",
+    "label": "Lisans Süresi",
+    "opts": [
+      { "n": "1 Yıllık Lisans", "p": 0 },
+      { "n": "Ömür Boyu Lisans", "p": 400 }
+    ],
+    "inputHint": "Sertifika sahibi adı"
+  },
+  {
+    "id": "p5",
+    "aktif": true,
+    "title": "5. Sayfa",
+    "name": "Mühendislik Proje Kutusu - Paket 5",
+    "ref": "REF-005",
+    "basePrice": 250,
+    "img": "images/5.jpg",
+    "label": "Kutu Rengi",
+    "opts": [
+      { "n": "Şeffaf", "p": 0 },
+      { "n": "Opak Siyah", "p": 15 }
+    ],
+    "inputHint": "Kapak logosu metni"
+  }
+]
