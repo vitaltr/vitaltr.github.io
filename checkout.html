@@ -5,7 +5,7 @@
 <title>Ödeme</title>
 
 <style>
-body{font-family:Arial;background:#f4f6f8;padding:20px}
+body{font-family:Arial;padding:20px;background:#f4f6f8}
 
 .box{
 background:white;
@@ -37,11 +37,11 @@ border-radius:8px;
 
 <div class="box">
 
-<input id="name" placeholder="Ad Soyad">
+<input id="name" placeholder="Ad">
 <input id="address" placeholder="Adres">
 <input id="phone" placeholder="Telefon">
 
-<button onclick="pay()">SİPARİŞİ TAMAMLA</button>
+<button onclick="pay()">Sipariş Ver</button>
 
 </div>
 
@@ -50,17 +50,11 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 function pay(){
 
-if(!name.value || !address.value){
-alert("Eksik bilgi");
-return;
-}
-
 let order = {
 id:Date.now(),
 items:cart,
 name:name.value,
-address:address.value,
-phone:phone.value
+address:address.value
 };
 
 let orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -69,7 +63,7 @@ orders.push(order);
 localStorage.setItem("orders",JSON.stringify(orders));
 localStorage.removeItem("cart");
 
-alert("Sipariş alındı!");
+alert("Sipariş alındı");
 window.location.href="index.html";
 }
 </script>
