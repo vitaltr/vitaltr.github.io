@@ -7,8 +7,8 @@
 <style>
 body{font-family:Arial;padding:20px}
 input,select{display:block;margin:5px 0;padding:8px}
-.box{border:1px solid #ccc;padding:10px;margin:10px 0}
-button{padding:8px 12px}
+button{padding:8px 12px;cursor:pointer}
+.box{border:1px solid #ddd;padding:10px;margin-top:10px}
 </style>
 </head>
 
@@ -22,23 +22,92 @@ button{padding:8px 12px}
 <div id="panel" style="display:none">
 
 <h3>Kategori Ekle</h3>
-<input id="title" placeholder="Kategori adı">
-<button onclick="addCategory()">Ekle</button>
+<input id="cat" placeholder="Kategori adı">
+<button onclick="addCat()">Ekle</button>
 
 <h3>Ürün Ekle</h3>
 
-<select id="cat"></select>
-<input id="name" placeholder="Ürün">
+<select id="category"></select>
+<input id="name" placeholder="Ürün adı">
 <input id="price" placeholder="Fiyat">
 <input id="img" placeholder="Resim URL">
+<input id="desc" placeholder="Açıklama">
 
 <button onclick="addProduct()">Ürün Ekle</button>
 
-<h3>Mevcut Sistem</h3>
 <div id="list"></div>
 
 </div>
 
-<script src="admin.js"></script>
+<script>
+let data = JSON.parse(localStorage.getItem("data")) || [];
+
+/* LOGIN */
+function login(){
+if(pass.value=="1234"){
+panel.style.display="block";
+renderCats();
+renderList();
+}
+}
+
+/* CAT */
+function renderCats(){
+let c=document.getElementById("category");
+c.innerHTML="";
+data.forEach((x,i)=>{
+c.innerHTML+=`<option value="${i}">${x.title}</option>`;
+});
+}
+
+/* CAT EKLE */
+function addCat(){
+data.push({
+title:cat.value,
+products:[]
+});
+
+save();
+renderCats();
+renderList();
+}
+
+/* ÜRÜN EKLE */
+function addProduct(){
+let i=document.getElementById("category").value;
+
+data[i].products.push({
+id:Date.now(),
+name:name.value,
+price:parseInt(price.value),
+img:img.value,
+desc:desc.value
+});
+
+save();
+renderList();
+}
+
+/* KAYDET */
+function save(){
+localStorage.setItem("data",JSON.stringify(data));
+}
+
+/* GÖRÜNTÜ */
+function renderList(){
+let list=document.getElementById("list");
+list.innerHTML="";
+
+data.forEach(c=>{
+list.innerHTML+=`
+<div class="box">
+<h3>${c.title}</h3>
+<p>${c.products.length} ürün</p>
+</div>
+`;
+});
+}
+</script>
+
 </body>
 </html>
