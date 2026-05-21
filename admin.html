@@ -6,28 +6,9 @@
 
 <style>
 body{font-family:Arial;padding:20px;background:#f4f6f8}
-
-.box{
-background:#fff;
-padding:15px;
-margin:10px 0;
-border-radius:10px;
-}
-
-input,textarea{
-width:100%;
-padding:8px;
-margin:5px 0;
-}
-
-button{
-padding:8px;
-border:none;
-cursor:pointer;
-margin:3px;
-border-radius:6px;
-}
-
+.box{background:#fff;padding:10px;margin:10px 0;border-radius:10px}
+input,textarea{width:100%;padding:8px;margin:5px 0}
+button{padding:6px;border:none;border-radius:6px;cursor:pointer}
 .green{background:#2ecc71;color:#fff}
 .red{background:#e74c3c;color:#fff}
 .blue{background:#3498db;color:#fff}
@@ -36,19 +17,18 @@ border-radius:6px;
 
 <body>
 
-<h2>ADMIN PANEL</h2>
+<h2>ADMIN</h2>
 
-<input type="password" id="pass" placeholder="Şifre">
+<input type="password" id="pass">
 <button class="blue" onclick="login()">Giriş</button>
 
 <div id="panel" style="display:none">
 
-<!-- CATEGORY -->
+<!-- CAT -->
 <div class="box">
 <h3>Kategori</h3>
 <input id="cat">
 <button class="green" onclick="addCat()">Ekle</button>
-<div id="cats"></div>
 </div>
 
 <!-- PRODUCT -->
@@ -57,65 +37,58 @@ border-radius:6px;
 
 <select id="catSelect"></select>
 
-<input id="name" placeholder="Ürün">
-<input id="price" placeholder="Fiyat">
-<input id="img" placeholder="1.jpg">
-<textarea id="desc" placeholder="Açıklama"></textarea>
+<input id="name">
+<input id="price">
+<input id="img">
+<input id="stock">
+<textarea id="desc"></textarea>
 
 <button class="green" onclick="addProduct()">Ekle</button>
-<button class="blue" onclick="updateProduct()" id="updBtn" style="display:none">Güncelle</button>
+<button class="blue" onclick="updateProduct()" id="upd" style="display:none">Güncelle</button>
 </div>
 
 <!-- LIST -->
-<div class="box">
-<h3>Ürünler</h3>
 <div id="list"></div>
-</div>
 
 </div>
 
 <script>
 let store = JSON.parse(localStorage.getItem("store")) || {categories:[]};
-let edit = {c:-1,p:-1};
+let edit={c:-1,p:-1};
 
 function login(){
 if(pass.value==="1234"){
 panel.style.display="block";
 render();
-}else alert("hatalı");
+}
 }
 
+/* SAVE */
 function save(){
 localStorage.setItem("store",JSON.stringify(store));
 render();
 }
 
-/* CATEGORY */
+/* CAT */
 function addCat(){
 store.categories.push({
 id:Date.now(),
 name:cat.value,
 products:[]
 });
-cat.value="";
 save();
 }
 
-/* DELETE CAT */
-function delCat(i){
-store.categories.splice(i,1);
-save();
-}
-
-/* ADD PRODUCT */
+/* PRODUCT */
 function addProduct(){
-let i = catSelect.value;
+let i=catSelect.value;
 
 store.categories[i].products.push({
 id:Date.now(),
 name:name.value,
 price:price.value,
 img:img.value,
+stock:stock.value,
 desc:desc.value
 });
 
@@ -129,11 +102,11 @@ let p=store.categories[ci].products[pi];
 name.value=p.name;
 price.value=p.price;
 img.value=p.img;
+stock.value=p.stock;
 desc.value=p.desc;
 
 edit={c:ci,p:pi};
-
-updBtn.style.display="inline-block";
+upd.style.display="block";
 }
 
 function updateProduct(){
@@ -142,13 +115,14 @@ let p=store.categories[edit.c].products[edit.p];
 p.name=name.value;
 p.price=price.value;
 p.img=img.value;
+p.stock=stock.value;
 p.desc=desc.value;
 
-updBtn.style.display="none";
+upd.style.display="none";
 save();
 }
 
-/* DELETE PRODUCT */
+/* DELETE */
 function delProduct(ci,pi){
 store.categories[ci].products.splice(pi,1);
 save();
@@ -162,31 +136,20 @@ store.categories.forEach((c,i)=>{
 catSelect.innerHTML+=`<option value="${i}">${c.name}</option>`;
 });
 
-let cats=document.getElementById("cats");
-cats.innerHTML="";
-
-store.categories.forEach((c,i)=>{
-cats.innerHTML+=`
-<div>
-<b>${c.name}</b>
-<button class="red" onclick="delCat(${i})">Sil</button>
-</div>`;
-});
-
 let list=document.getElementById("list");
 list.innerHTML="";
 
 store.categories.forEach((c,ci)=>{
-list.innerHTML+=`<h4>${c.name}</h4>`;
+list.innerHTML+=`<h3>${c.name}</h3>`;
 
 c.products.forEach((p,pi)=>{
 list.innerHTML+=`
 <div class="box">
-${p.name} - ${p.price}
+<b>${p.name}</b>
 <button class="blue" onclick="editProduct(${ci},${pi})">Edit</button>
 <button class="red" onclick="delProduct(${ci},${pi})">Sil</button>
 </div>`;
-}); 
+});
 });
 }
 </script>
