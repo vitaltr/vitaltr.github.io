@@ -1,1 +1,48 @@
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f5f5f5;
+}
 
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#111;
+  color:#fff;
+  padding:15px;
+}
+
+.logo span{ color:#00d4ff; }
+
+.menu button{
+  margin:0 5px;
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+.cart{
+  background:#00d4ff;
+  padding:5px 10px;
+  border-radius:5px;
+  color:#000;
+}
+
+.product{
+  background:#fff;
+  margin:10px;
+  padding:10px;
+  border-radius:8px;
+}
+
+.order-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:15px;
+  background:green;
+  color:#fff;
+  border:none;
+  border-radius:50px;
+  cursor:pointer;
+}
