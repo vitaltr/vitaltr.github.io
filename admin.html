@@ -2,64 +2,35 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ADMIN PANEL</title>
+<title>ADMIN</title>
 
 <style>
-body{
-font-family:Arial;
-background:#f5f6f8;
-padding:20px;
-}
+body{font-family:Arial;padding:20px;background:#f4f6f8}
 
-h2{color:#111}
-
-.card{
+.box{
 background:#fff;
 padding:15px;
+margin:10px 0;
 border-radius:10px;
-margin-bottom:15px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-input,select,textarea{
+input,textarea{
 width:100%;
-padding:10px;
+padding:8px;
 margin:5px 0;
-border:1px solid #ddd;
-border-radius:8px;
-outline:none;
 }
 
 button{
-padding:10px 12px;
+padding:8px;
 border:none;
-border-radius:8px;
 cursor:pointer;
-font-weight:bold;
-}
-
-.btn-blue{background:#00bcd4;color:#fff}
-.btn-red{background:#e74c3c;color:#fff}
-.btn-green{background:#2ecc71;color:#fff}
-
-.row{display:flex;gap:10px}
-
-.small-btn{
-padding:6px 10px;
-font-size:12px;
-background:#333;
-color:#fff;
+margin:3px;
 border-radius:6px;
-cursor:pointer;
-margin:2px;
 }
 
-.product-box{
-border:1px solid #eee;
-padding:10px;
-border-radius:8px;
-margin-top:10px;
-}
+.green{background:#2ecc71;color:#fff}
+.red{background:#e74c3c;color:#fff}
+.blue{background:#3498db;color:#fff}
 </style>
 </head>
 
@@ -67,56 +38,36 @@ margin-top:10px;
 
 <h2>ADMIN PANEL</h2>
 
-<!-- LOGIN -->
-<div class="card">
 <input type="password" id="pass" placeholder="Şifre">
-<button class="btn-blue" onclick="login()">Giriş</button>
-</div>
+<button class="blue" onclick="login()">Giriş</button>
 
 <div id="panel" style="display:none">
 
-<!-- KATEGORİ -->
-<div class="card">
-<h3>Kategori Ekle</h3>
-<input id="cat" placeholder="Kategori adı">
-<button class="btn-green" onclick="addCat()">Ekle</button>
-
-<h4>Kategoriler</h4>
-<div id="catList"></div>
+<!-- CATEGORY -->
+<div class="box">
+<h3>Kategori</h3>
+<input id="cat">
+<button class="green" onclick="addCat()">Ekle</button>
+<div id="cats"></div>
 </div>
 
-<!-- ÜRÜN -->
-<div class="card">
-<h3>Ürün Ekle</h3>
+<!-- PRODUCT -->
+<div class="box">
+<h3>Ürün</h3>
 
-<select id="category"></select>
+<select id="catSelect"></select>
 
-<input id="name" placeholder="Ürün adı">
+<input id="name" placeholder="Ürün">
 <input id="price" placeholder="Fiyat">
+<input id="img" placeholder="1.jpg">
 <textarea id="desc" placeholder="Açıklama"></textarea>
 
-<!-- RESİM -->
-<input id="img" placeholder="Resim URL">
-
-<div>
-<p>Hazır Resimler:</p>
-<button class="small-btn" onclick="setImg('https://picsum.photos/300/200?1')">1</button>
-<button class="small-btn" onclick="setImg('https://picsum.photos/300/200?2')">2</button>
-<button class="small-btn" onclick="setImg('https://picsum.photos/300/200?3')">3</button>
+<button class="green" onclick="addProduct()">Ekle</button>
+<button class="blue" onclick="updateProduct()" id="updBtn" style="display:none">Güncelle</button>
 </div>
 
-<label>
-<input type="checkbox" id="personalize"> Kişiselleştirme
-</label>
-
-<textarea id="options" placeholder="Standart:0
-Özel:50"></textarea>
-
-<button class="btn-blue" onclick="addProduct()">Ürün Ekle</button>
-</div>
-
-<!-- LİSTE -->
-<div class="card">
+<!-- LIST -->
+<div class="box">
 <h3>Ürünler</h3>
 <div id="list"></div>
 </div>
@@ -124,109 +75,117 @@ margin-top:10px;
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("data")) || [];
+let store = JSON.parse(localStorage.getItem("store")) || {categories:[]};
+let edit = {c:-1,p:-1};
 
-/* LOGIN */
 function login(){
 if(pass.value==="1234"){
 panel.style.display="block";
-renderAll();
-}else alert("Hatalı şifre");
+render();
+}else alert("hatalı");
 }
 
-/* SAVE */
 function save(){
-localStorage.setItem("data",JSON.stringify(data));
-renderAll();
+localStorage.setItem("store",JSON.stringify(store));
+render();
 }
 
-/* IMG QUICK */
-function setImg(url){
-document.getElementById("img").value = url;
-}
-
-/* ADD CATEGORY */
+/* CATEGORY */
 function addCat(){
-if(!cat.value) return;
-data.push({title:cat.value,products:[]});
+store.categories.push({
+id:Date.now(),
+name:cat.value,
+products:[]
+});
 cat.value="";
 save();
 }
 
-/* DELETE CATEGORY */
-function deleteCat(i){
-data.splice(i,1);
+/* DELETE CAT */
+function delCat(i){
+store.categories.splice(i,1);
 save();
 }
 
 /* ADD PRODUCT */
 function addProduct(){
-let i = category.value;
+let i = catSelect.value;
 
-let opts = options.value.trim()
-? options.value.split("\n").map(x=>{
-let [n,p]=x.split(":");
-return {name:n,price:parseInt(p)||0};
-})
-: [];
-
-data[i].products.push({
+store.categories[i].products.push({
 id:Date.now(),
 name:name.value,
-price:parseInt(price.value)||0,
+price:price.value,
 img:img.value,
-desc:desc.value,
-personalize:personalize.checked,
-options:opts
+desc:desc.value
 });
 
+save();
+}
+
+/* EDIT */
+function editProduct(ci,pi){
+let p=store.categories[ci].products[pi];
+
+name.value=p.name;
+price.value=p.price;
+img.value=p.img;
+desc.value=p.desc;
+
+edit={c:ci,p:pi};
+
+updBtn.style.display="inline-block";
+}
+
+function updateProduct(){
+let p=store.categories[edit.c].products[edit.p];
+
+p.name=name.value;
+p.price=price.value;
+p.img=img.value;
+p.desc=desc.value;
+
+updBtn.style.display="none";
 save();
 }
 
 /* DELETE PRODUCT */
-function deleteProduct(ci,pi){
-data[ci].products.splice(pi,1);
+function delProduct(ci,pi){
+store.categories[ci].products.splice(pi,1);
 save();
 }
 
 /* RENDER */
-function renderAll(){
+function render(){
 
-/* category dropdown */
-let c=document.getElementById("category");
-c.innerHTML="";
-data.forEach((x,i)=>{
-c.innerHTML+=`<option value="${i}">${x.title}</option>`;
+catSelect.innerHTML="";
+store.categories.forEach((c,i)=>{
+catSelect.innerHTML+=`<option value="${i}">${c.name}</option>`;
 });
 
-/* categories */
-let catList=document.getElementById("catList");
-catList.innerHTML="";
+let cats=document.getElementById("cats");
+cats.innerHTML="";
 
-data.forEach((c,i)=>{
-catList.innerHTML+=`
-<div class="product-box">
-<b>${c.title}</b>
-<button class="btn-red" onclick="deleteCat(${i})">Sil</button>
+store.categories.forEach((c,i)=>{
+cats.innerHTML+=`
+<div>
+<b>${c.name}</b>
+<button class="red" onclick="delCat(${i})">Sil</button>
 </div>`;
 });
 
-/* products */
 let list=document.getElementById("list");
 list.innerHTML="";
 
-data.forEach((c,ci)=>{
-list.innerHTML+=`<h4>${c.title}</h4>`;
+store.categories.forEach((c,ci)=>{
+list.innerHTML+=`<h4>${c.name}</h4>`;
 
 c.products.forEach((p,pi)=>{
 list.innerHTML+=`
-<div class="product-box">
-<img src="${p.img}" width="100"><br>
-<b>${p.name}</b> - ${p.price} TL
-<br>
-<button class="btn-red" onclick="deleteProduct(${ci},${pi})">Ürün Sil</button>
-</div>
-`;
+<div class="box">
+${p.name} - ${p.price}
+<button class="blue" onclick="editProduct(${ci},${pi})">Edit</button>
+<button class="red" onclick="delProduct(${ci},${pi})">Sil</button>
+</div>`;
 });
 });
 }
