@@ -2,84 +2,25 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>PRO SHOP</title>
+<title>SHOP</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f6f8}
-header{
-display:flex;justify-content:space-between;align-items:center;
-padding:15px;background:#111;color:#fff
-}
-
-.menu button{
-margin:3px;padding:8px 12px;border:none;
-border-radius:6px;cursor:pointer;
-background:#333;color:#fff
-}
-.menu button:hover{background:#00bcd4}
-
-.product{
-display:flex;gap:15px;
-background:#fff;margin:12px;padding:15px;
-border-radius:12px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1)
-}
-
-.product img{
-width:150px;border-radius:10px
-}
-
+body{margin:0;font-family:Arial;background:#f4f4f4}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#111;color:#fff}
+.menu button{margin:3px;padding:6px 10px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer}
+.product{display:flex;gap:15px;background:#fff;margin:10px;padding:10px;border-radius:10px}
+.product img{width:130px;border-radius:8px}
 .right{flex:1}
-
-.title{font-size:18px;font-weight:bold}
-.desc{font-size:13px;color:#555;margin:5px 0}
-
-.badge{
-display:inline-block;
-padding:4px 8px;
-background:#eee;
-border-radius:5px;
-font-size:12px
-}
-
-input,select{
-width:100%;
-margin-top:6px;
-padding:7px;
-border-radius:6px;
-border:1px solid #ccc
-}
-
-.btn{
-margin-top:8px;
-padding:10px;
-width:100%;
-border:none;
-border-radius:8px;
-cursor:pointer;
-background:#00bcd4;
-color:#fff;
-font-weight:bold
-}
-
-.btn:hover{background:#0097a7}
-
-.cart{
-background:#00d4ff;padding:5px 10px;border-radius:5px;color:#000
-}
-
-.order{
-position:fixed;bottom:20px;right:20px;
-background:green;color:#fff;
-padding:15px;border:none;border-radius:30px;cursor:pointer
-}
+.cart{background:#00d4ff;padding:5px 10px;border-radius:5px}
+.order{position:fixed;bottom:20px;right:20px;background:green;color:#fff;padding:15px;border:none;border-radius:30px;cursor:pointer}
+input,select{width:100%;margin-top:5px;padding:6px}
 </style>
 </head>
 
 <body>
 
 <header>
-<div><b>SHOP PRO</b></div>
+<div>SHOP</div>
 <div class="menu" id="menu"></div>
 <div class="cart">🛒 <span id="cartCount">0</span></div>
 </header>
@@ -88,6 +29,96 @@ padding:15px;border:none;border-radius:30px;cursor:pointer
 
 <button class="order" onclick="sendOrder()">Sipariş</button>
 
-<script src="shop.js"></script>
+<script>
+let data = JSON.parse(localStorage.getItem("data")) || [];
+let cart=[];
+let active=0;
+
+function renderMenu(){
+let m=document.getElementById("menu");
+m.innerHTML="";
+data.forEach((c,i)=>{
+m.innerHTML+=`<button onclick="openPage(${i})">${c.title}</button>`;
+});
+}
+
+function openPage(i){
+active=i;
+render();
+}
+
+function render(){
+let app=document.getElementById("app");
+app.innerHTML="";
+
+if(!data.length) return;
+
+data[active].products.forEach(p=>{
+app.innerHTML+=`
+<div class="product">
+<img src="${p.img}">
+<div class="right">
+<h3>${p.name}</h3>
+<p>${p.desc}</p>
+<b>${p.price} TL</b>
+
+${p.personalize ? `<input id="c${p.id}" placeholder="Kişiselleştirme">` : ""}
+
+${p.options?.length ? `
+<select id="o${p.id}">
+${p.options.map(o=>`<option value="${o.price}">${o.name}</option>`).join("")}
+</select>` : ""}
+
+<button onclick="addCart(${p.id})">Sepete</button>
+</div>
+</div>
+`;
+});
+
+document.getElementById("cartCount").innerText=cart.length;
+}
+
+function addCart(id){
+let product;
+
+data.forEach(c=>{
+c.products.forEach(p=>{
+if(p.id==id) product=p;
+});
+});
+
+let extra=0,opt="",custom="";
+
+if(product.options?.length){
+let s=document.getElementById("o"+id);
+extra=parseInt(s.value);
+opt=s.options[s.selectedIndex].text;
+}
+
+if(product.personalize){
+custom=document.getElementById("c"+id).value;
+}
+
+cart.push({
+name:product.name,
+price:product.price+extra,
+opt,custom
+});
+
+document.getElementById("cartCount").innerText=cart.length;
+}
+
+function sendOrder(){
+let msg="Sipariş:%0A";
+cart.forEach(c=>{
+msg+=`- ${c.name} ${c.price}TL ${c.opt||""} ${c.custom||""}%0A`;
+});
+window.open("https://wa.me/90XXXXXXXXXX?text="+msg);
+}
+
+renderMenu();
+render();
+</script>
+
 </body>
 </html>
