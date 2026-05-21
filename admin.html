@@ -1,18 +1,25 @@
-let data = JSON.parse(localStorage.getItem("data")||"[]");
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin</title>
+</head>
+<body>
 
-function login(){
-  if(document.getElementById("pass").value=="1234"){
-    document.getElementById("panel").style.display="block";
-  }
-}
+<h2>Admin Panel</h2>
 
-function add(){
-  data.push({
-    name: name.value,
-    basePrice: price.value,
-    img: img.value
-  });
+<input type="password" id="pass">
+<button onclick="login()">Giriş</button>
 
-  localStorage.setItem("data",JSON.stringify(data));
-  alert("eklendi");
-}
+<div id="panel" style="display:none">
+
+<h3>Ürün Ekle</h3>
+<input id="name" placeholder="Ürün">
+<input id="price" placeholder="Fiyat">
+<button onclick="add()">Ekle</button>
+
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
