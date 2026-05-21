@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Sepet</title>
 
+<style>
+body{font-family:Arial;background:#f3f5f7;padding:20px}
+
+.item{
+background:white;
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+button{
+background:red;
+color:white;
+border:none;
+padding:6px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.total{
+font-size:20px;
+font-weight:bold;
+margin-top:20px;
+}
+
+.checkout{
+background:#00d4ff;
+color:black;
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+width:100%;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🛒 Sepetim</h2>
+
+<div id="list"></div>
+
+<div class="total" id="total"></div>
+
+<button class="checkout" onclick="checkout()">ÖDEMEYE GEÇ</button>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function render(){
+let box=document.getElementById("list");
+box.innerHTML="";
+
+let sum=0;
+
+cart.forEach((p,i)=>{
+sum += Number(p.price);
+
+box.innerHTML+=`
+<div class="item">
+<div>
+<b>${p.name}</b><br>
+${p.price} TL
+</div>
+<button onclick="del(${i})">Sil</button>
+</div>`;
+});
+
+document.getElementById("total").innerText="Toplam: "+sum+" TL";
+}
+
+function del(i){
+cart.splice(i,1);
+localStorage.setItem("cart",JSON.stringify(cart));
+render();
+}
+
+function checkout(){
+window.location.href="checkout.html";
+}
+
+render();
+</script>
+
+</body>
+</html>
