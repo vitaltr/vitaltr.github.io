@@ -2,139 +2,92 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>SHOP</title>
+<title>PRO SHOP</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#111;color:#fff}
-.menu button{margin:3px;padding:6px 10px;cursor:pointer}
+body{margin:0;font-family:Arial;background:#f4f6f8}
+header{
+display:flex;justify-content:space-between;align-items:center;
+padding:15px;background:#111;color:#fff
+}
+
+.menu button{
+margin:3px;padding:8px 12px;border:none;
+border-radius:6px;cursor:pointer;
+background:#333;color:#fff
+}
+.menu button:hover{background:#00bcd4}
+
 .product{
 display:flex;gap:15px;
-background:#fff;margin:10px;padding:10px;
-border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1)
+background:#fff;margin:12px;padding:15px;
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1)
 }
-.product img{width:140px;border-radius:8px}
+
+.product img{
+width:150px;border-radius:10px
+}
+
 .right{flex:1}
-.cart{background:#00d4ff;padding:5px 10px;border-radius:5px;color:#000}
+
+.title{font-size:18px;font-weight:bold}
+.desc{font-size:13px;color:#555;margin:5px 0}
+
+.badge{
+display:inline-block;
+padding:4px 8px;
+background:#eee;
+border-radius:5px;
+font-size:12px
+}
+
+input,select{
+width:100%;
+margin-top:6px;
+padding:7px;
+border-radius:6px;
+border:1px solid #ccc
+}
+
+.btn{
+margin-top:8px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#00bcd4;
+color:#fff;
+font-weight:bold
+}
+
+.btn:hover{background:#0097a7}
+
+.cart{
+background:#00d4ff;padding:5px 10px;border-radius:5px;color:#000
+}
+
 .order{
 position:fixed;bottom:20px;right:20px;
 background:green;color:#fff;
 padding:15px;border:none;border-radius:30px;cursor:pointer
 }
-input,select{width:100%;margin-top:5px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div><b>SHOP</b></div>
-  <div class="menu" id="menu"></div>
-  <div class="cart">🛒 <span id="cartCount">0</span></div>
+<div><b>SHOP PRO</b></div>
+<div class="menu" id="menu"></div>
+<div class="cart">🛒 <span id="cartCount">0</span></div>
 </header>
 
 <main id="app"></main>
 
-<button class="order" onclick="sendOrder()">Sipariş Gönder</button>
+<button class="order" onclick="sendOrder()">Sipariş</button>
 
-<script>
-let data = JSON.parse(localStorage.getItem("data")) || [
-{
-title:"Elektronik",
-products:[
-{id:1,name:"PCB Kit",price:450,img:"https://picsum.photos/200?1",desc:"PCB geliştirme seti"},
-{id:2,name:"IoT Kit",price:600,img:"https://picsum.photos/200?2",desc:"IoT cihaz seti"}
-]
-}
-];
-
-let cart=[];
-let active=0;
-
-/* MENÜ */
-function renderMenu(){
-let menu=document.getElementById("menu");
-menu.innerHTML="";
-data.forEach((c,i)=>{
-menu.innerHTML+=`<button onclick="openPage(${i})">${c.title}</button>`;
-});
-}
-
-/* SAYFA */
-function openPage(i){
-active=i;
-render();
-}
-
-/* ÜRÜN */
-function render(){
-let app=document.getElementById("app");
-app.innerHTML="";
-
-if(!data.length) return;
-
-data[active].products.forEach(p=>{
-app.innerHTML+=`
-<div class="product">
-<img src="${p.img}">
-
-<div class="right">
-<h3>${p.name}</h3>
-<p>${p.desc}</p>
-<b>${p.price} TL</b>
-
-<input id="c${p.id}" placeholder="Kişiselleştirme">
-
-<select id="s${p.id}">
-<option value="0">Standart</option>
-<option value="50">Özel +50 TL</option>
-</select>
-
-<button onclick="addCart(${p.id})">Sepete Ekle</button>
-</div>
-</div>
-`;
-});
-
-document.getElementById("cartCount").innerText=cart.length;
-}
-
-/* SEPET */
-function addCart(id){
-let product;
-
-data.forEach(c=>{
-c.products.forEach(p=>{
-if(p.id==id) product=p;
-});
-});
-
-let extra=parseInt(document.getElementById("s"+id).value);
-let custom=document.getElementById("c"+id).value;
-
-cart.push({
-name:product.name,
-price:product.price+extra,
-custom
-});
-
-document.getElementById("cartCount").innerText=cart.length;
-}
-
-/* SİPARİŞ */
-function sendOrder(){
-let msg="Yeni Sipariş:%0A";
-
-cart.forEach(c=>{
-msg+=`- ${c.name} ${c.price}TL (${c.custom})%0A`;
-});
-
-window.open("https://wa.me/90XXXXXXXXXX?text="+msg);
-}
-
-renderMenu();
-render();
-</script>
-
+<script src="shop.js"></script>
 </body>
 </html>
