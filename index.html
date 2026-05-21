@@ -4,17 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SHOP</title>
+<title>SHOP PRO</title>
 
 <style>
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI}
 
 body{
 margin:0;
-font-family:Arial;
-background:#f3f5f7;
+background:#f6f6f6;
+color:#111;
 }
 
 /* HEADER */
@@ -22,119 +20,107 @@ header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:10px 12px;
-background:#111;
-color:white;
-flex-wrap:wrap;
-gap:8px;
+padding:12px 14px;
+background:#fff;
+border-bottom:1px solid #eee;
+position:sticky;
+top:0;
+z-index:10;
 }
 
-.logo{
-font-weight:bold;
-}
+.logo{font-weight:700}
+.logo span{color:#007aff}
 
-.logo span{color:#00d4ff}
-
+/* CATEGORY */
 .nav{
 display:flex;
-gap:6px;
-flex-wrap:wrap;
+gap:8px;
+overflow-x:auto;
+padding:10px;
+background:#fff;
+border-bottom:1px solid #eee;
 }
 
 .nav button{
-background:#222;
-color:white;
+white-space:nowrap;
 border:none;
-padding:5px 8px;
-border-radius:12px;
-font-size:11px;
+background:#f1f1f1;
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
 cursor:pointer;
 }
 
 .nav button.active{
-background:#00d4ff;
-color:black;
+background:#007aff;
+color:#fff;
 }
 
-/* GRID (MOBİL ODAKLI) */
+/* GRID */
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
 gap:10px;
 padding:10px;
 }
 
-/* MOBİLDE TEK SÜTUN */
+/* MOBİL */
 @media(max-width:768px){
 .container{
-grid-template-columns:1fr;
+grid-template-columns:repeat(2,1fr);
+gap:8px;
+padding:8px;
 }
 }
 
 /* CARD */
 .card{
-background:white;
-border-radius:10px;
+background:#fff;
+border-radius:14px;
 overflow:hidden;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
-display:flex;
-flex-direction:column;
+box-shadow:0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* GÖRSEL SABİT ORAN */
 .card img{
 width:100%;
-height:150px;
+height:140px;
 object-fit:cover;
 }
 
-/* MOBİLDE DAHA DÜZGÜN */
-@media(max-width:768px){
-.card img{
-height:200px;
-}
+.body{padding:8px}
+
+.title{
+font-size:13px;
+font-weight:600;
+margin:0;
 }
 
-.body{
-padding:8px;
-}
-
-h3{
-font-size:15px;
-margin:5px 0;
-}
-
-p{
-font-size:12px;
+.desc{
+font-size:11px;
+color:#666;
 margin:4px 0;
-color:#555;
 }
 
 .price{
-color:#1a8f3a;
-font-weight:bold;
-font-size:14px;
-margin-top:5px;
+font-size:13px;
+font-weight:700;
+color:#1a7f37;
+margin-top:4px;
 }
 
-/* BUTONLAR */
-.actions{
-display:flex;
-gap:6px;
-margin-top:8px;
-}
-
-button{
+.btn{
+width:100%;
 border:none;
-border-radius:6px;
+padding:7px;
+border-radius:10px;
+font-size:12px;
+margin-top:6px;
 cursor:pointer;
-font-size:11px;
-padding:6px 8px;
 }
 
-.cartbtn{
-background:#00d4ff;
-flex:1;
+.cart{
+background:#007aff;
+color:#fff;
 }
 </style>
 </head>
@@ -143,17 +129,14 @@ flex:1;
 
 <header>
 <div class="logo">VITAL<span>SHOP</span></div>
-
-<div class="nav" id="nav"></div>
-
-<button onclick="location.href='cart.html'" style="padding:6px 8px;font-size:12px;background:#00d4ff;border:none;border-radius:6px;">
-🛒
-</button>
+<button onclick="location.href='cart.html'">🛒</button>
 </header>
 
+<div class="nav" id="nav"></div>
 <div class="container" id="products"></div>
 
 <script>
+
 let store = JSON.parse(localStorage.getItem("store")) || {
 categories:[
 {
@@ -162,26 +145,34 @@ products:[
 {
 id:1,
 name:"Mouse",
-price:200,
+price:199,
 img:"1.jpg",
 desc:"Gaming mouse",
 stock:5
+},
+{
+id:2,
+name:"Keyboard",
+price:399,
+img:"2.jpg",
+desc:"Mechanical",
+stock:3
 }
 ]
 }
 ]
 };
 
-let active=0;
+let active = 0;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* NAV */
 function renderNav(){
-let nav=document.getElementById("nav");
+let nav = document.getElementById("nav");
 nav.innerHTML="";
 
 store.categories.forEach((c,i)=>{
-nav.innerHTML+=`
+nav.innerHTML += `
 <button class="${i===active?'active':''}" onclick="openCat(${i})">
 ${c.name}
 </button>`;
@@ -210,18 +201,17 @@ cat.products.forEach(p=>{
 
 let img = p.img.startsWith("http") ? p.img : "images/"+p.img;
 
-box.innerHTML+=`
+box.innerHTML += `
 <div class="card">
 <img src="${img}">
 <div class="body">
-<h3>${p.name}</h3>
-<p>${p.desc}</p>
-
+<div class="title">${p.name}</div>
+<div class="desc">${p.desc}</div>
 <div class="price">${p.price} TL</div>
 
-<div class="actions">
-<button class="cartbtn" onclick="addCart(${p.id})">Sepete Ekle</button>
-</div>
+<button class="btn cart" onclick="add(${p.id})">
+Sepete Ekle
+</button>
 
 </div>
 </div>
@@ -229,15 +219,11 @@ box.innerHTML+=`
 });
 }
 
-/* SEPET */
-function addCart(id){
+/* CART */
+function add(id){
 store.categories.forEach(c=>{
 c.products.forEach(p=>{
 if(p.id===id){
-if(p.stock<=0){
-alert("Stok yok");
-return;
-}
 cart.push(p);
 localStorage.setItem("cart",JSON.stringify(cart));
 alert("Eklendi");
@@ -248,6 +234,7 @@ alert("Eklendi");
 
 renderNav();
 render();
+
 </script>
 
 </body>
