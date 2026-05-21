@@ -34,11 +34,16 @@ cursor:pointer;
 
 .nav button.active{background:#00d4ff;color:#000}
 
+/* BUTTONS TOP RIGHT */
+.right{
+display:flex;
+gap:8px;
+}
+
 /* SEARCH */
-.search{
-padding:10px;
+input{
 width:100%;
-box-sizing:border-box;
+padding:10px;
 border:none;
 outline:none;
 }
@@ -58,23 +63,25 @@ overflow:hidden;
 box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-.card img{width:100%;height:180px;object-fit:cover}
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
 
 .body{padding:10px}
 
 .price{color:green;font-weight:bold}
 
-.btn{
-width:100%;
-padding:8px;
+button{
+padding:6px;
 border:none;
 cursor:pointer;
-margin-top:5px;
-border-radius:8px;
+border-radius:6px;
 }
 
-.cart{background:#00d4ff}
-.fav{background:#ff4d6d;color:white}
+.cartbtn{background:#00d4ff}
+.favbtn{background:#ff4d6d;color:white}
 </style>
 </head>
 
@@ -82,18 +89,24 @@ border-radius:8px;
 
 <header>
 <div class="logo">VITAL<span>SHOP</span></div>
-<div class="nav" id="nav"></div>
+
+<div class="right">
+<button onclick="location.href='cart.html'">🛒 Sepet</button>
+</div>
 </header>
 
-<input class="search" id="search" oninput="search()" placeholder="Ürün ara">
+<input id="search" oninput="search()" placeholder="Ürün ara">
+
+<div class="nav" id="nav"></div>
 
 <div class="container" id="products"></div>
 
 <script>
 let store = JSON.parse(localStorage.getItem("store")) || {categories:[]};
 let active=0;
-let fav = JSON.parse(localStorage.getItem("fav")) || [];
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let fav = JSON.parse(localStorage.getItem("fav")) || [];
 
 /* NAV */
 function renderNav(){
@@ -133,19 +146,18 @@ box.innerHTML+=`
 <div class="body">
 <h3>${p.name}</h3>
 <p>${p.desc}</p>
-
 <div>Stok: ${p.stock}</div>
 <div class="price">${p.price} TL</div>
 
-<button class="btn cart" onclick='addCart(${p.id})'>Sepete Ekle</button>
-<button class="btn fav" onclick='toggleFav(${p.id})'>❤️</button>
+<button class="cartbtn" onclick="addCart(${p.id})">Sepete Ekle</button>
+<button class="favbtn" onclick="toggleFav(${p.id})">❤️</button>
 </div>
 </div>
 `;
 });
 }
 
-/* CART */
+/* SEPET */
 function addCart(id){
 store.categories.forEach(c=>{
 c.products.forEach(p=>{
@@ -153,6 +165,7 @@ if(p.id===id){
 if(p.stock<=0){alert("Stok yok");return;}
 cart.push(p);
 localStorage.setItem("cart",JSON.stringify(cart));
+alert("Sepete eklendi");
 }
 });
 });
@@ -160,9 +173,9 @@ localStorage.setItem("cart",JSON.stringify(cart));
 
 /* FAVORİ */
 function toggleFav(id){
-let found = fav.find(x=>x.id===id);
+let exists = fav.find(x=>x.id===id);
 
-if(found){
+if(exists){
 fav = fav.filter(x=>x.id!==id);
 }else{
 store.categories.forEach(c=>{
