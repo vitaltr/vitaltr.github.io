@@ -3,25 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <title>VITAL SHOP</title>
-<link rel="stylesheet" href="css/style.css">
+
+<style>
+body{margin:0;font-family:Arial;background:#f5f5f5}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#111;color:#fff}
+.logo{font-weight:bold}
+.menu button{margin:0 5px;padding:5px 10px}
+.product{background:#fff;margin:10px;padding:10px;border-radius:8px}
+.cart{background:#00d4ff;padding:5px 10px;border-radius:5px;color:#000}
+.order-btn{position:fixed;bottom:20px;right:20px;padding:15px;background:green;color:#fff;border:none;border-radius:30px;cursor:pointer}
+</style>
 </head>
+
 <body>
 
-<header class="topbar">
-  <div class="logo">VITAL<span>SHOP</span></div>
-
+<header>
+  <div class="logo">VITAL SHOP</div>
   <div class="menu" id="menu"></div>
-
-  <div class="cart">
-    🛒 Sepet (<span id="cartCount">0</span>)
-  </div>
+  <div class="cart">🛒 <span id="cartCount">0</span></div>
 </header>
 
 <main id="app"></main>
 
-<button class="order-btn" onclick="sendOrder()">
-  📦 Siparişi Gönder
-</button>
+<button class="order-btn" onclick="sendOrder()">Siparişi Gönder</button>
 
 <script src="js/shop.js"></script>
 </body>
