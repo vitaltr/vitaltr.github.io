@@ -1,25 +1,40 @@
-let data = JSON.parse(localStorage.getItem("data")||"[]");
+let data = JSON.parse(localStorage.getItem("data")) || [];
 
 function login(){
-  if(pass.value=="1234"){
-    panel.style.display="block";
-  }
+if(pass.value=="1234"){
+panel.style.display="block";
+}
 }
 
-function add(){
-  let obj = {
-    title:"Yeni Kategori",
-    products:[
-      {
-        name:name.value,
-        basePrice:price.value,
-        img:"https://picsum.photos/200"
-      }
-    ]
-  };
+function addProduct(){
 
-  data.push(obj);
-  localStorage.setItem("data",JSON.stringify(data));
+let page = data.find(x=>x.title==title.value);
 
-  alert("eklendi");
+let newProduct = {
+name:name.value,
+price:parseInt(price.value),
+img:img.value
+};
+
+if(page){
+page.products.push(newProduct);
+}else{
+data.push({
+id:"p"+Date.now(),
+title:title.value,
+products:[newProduct]
+});
+}
+
+save();
+}
+
+function deletePage(){
+data = data.filter(x=>x.id !== del.value);
+save();
+}
+
+function save(){
+localStorage.setItem("data",JSON.stringify(data));
+alert("Kaydedildi");
 }
