@@ -1,5 +1,6 @@
-let data = [
+let data = JSON.parse(localStorage.getItem("data")) || [
 {
+id:"p1",
 title:"Sayfa 1",
 products:[
 {name:"Ürün 1",price:100,img:"https://picsum.photos/200?1"},
@@ -7,46 +8,6 @@ products:[
 {name:"Ürün 3",price:300,img:"https://picsum.photos/200?3"},
 {name:"Ürün 4",price:400,img:"https://picsum.photos/200?4"},
 {name:"Ürün 5",price:500,img:"https://picsum.photos/200?5"}
-]
-},
-{
-title:"Sayfa 2",
-products:[
-{name:"Ürün 6",price:100,img:"https://picsum.photos/200?6"},
-{name:"Ürün 7",price:200,img:"https://picsum.photos/200?7"},
-{name:"Ürün 8",price:300,img:"https://picsum.photos/200?8"},
-{name:"Ürün 9",price:400,img:"https://picsum.photos/200?9"},
-{name:"Ürün 10",price:500,img:"https://picsum.photos/200?10"}
-]
-},
-{
-title:"Sayfa 3",
-products:[
-{name:"Ürün 11",price:100,img:"https://picsum.photos/200?11"},
-{name:"Ürün 12",price:200,img:"https://picsum.photos/200?12"},
-{name:"Ürün 13",price:300,img:"https://picsum.photos/200?13"},
-{name:"Ürün 14",price:400,img:"https://picsum.photos/200?14"},
-{name:"Ürün 15",price:500,img:"https://picsum.photos/200?15"}
-]
-},
-{
-title:"Sayfa 4",
-products:[
-{name:"Ürün 16",price:100,img:"https://picsum.photos/200?16"},
-{name:"Ürün 17",price:200,img:"https://picsum.photos/200?17"},
-{name:"Ürün 18",price:300,img:"https://picsum.photos/200?18"},
-{name:"Ürün 19",price:400,img:"https://picsum.photos/200?19"},
-{name:"Ürün 20",price:500,img:"https://picsum.photos/200?20"}
-]
-},
-{
-title:"Sayfa 5",
-products:[
-{name:"Ürün 21",price:100,img:"https://picsum.photos/200?21"},
-{name:"Ürün 22",price:200,img:"https://picsum.photos/200?22"},
-{name:"Ürün 23",price:300,img:"https://picsum.photos/200?23"},
-{name:"Ürün 24",price:400,img:"https://picsum.photos/200?24"},
-{name:"Ürün 25",price:500,img:"https://picsum.photos/200?25"}
 ]
 }
 ];
@@ -75,18 +36,19 @@ data[active].products.forEach(p=>{
 app.innerHTML+=`
 <div class="product">
 <img src="${p.img}" width="150">
+
 <h3>${p.name}</h3>
 <p>${p.price} TL</p>
 
 <label>Açıklama</label>
-<input placeholder="Ürün açıklaması">
+<input id="desc${p.name}" placeholder="Ürün açıklaması">
 
 <label>Kişiselleştirme</label>
-<input placeholder="İsim / yazı">
+<input id="custom${p.name}" placeholder="İsim / yazı">
 
-<select>
-<option>Standart</option>
-<option>Özel (+50 TL)</option>
+<select id="opt${p.name}">
+<option value="0">Standart</option>
+<option value="50">Özel +50 TL</option>
 </select>
 
 <button onclick="addCart('${p.name}',${p.price})">
@@ -100,7 +62,15 @@ document.getElementById("cartCount").innerText=cart.length;
 }
 
 function addCart(name,price){
-cart.push({name,price});
+let opt=document.querySelector(`#opt${name}`).value;
+let custom=document.querySelector(`#custom${name}`).value;
+
+cart.push({
+name,
+price:price+parseInt(opt),
+custom
+});
+
 document.getElementById("cartCount").innerText=cart.length;
 }
 
@@ -108,7 +78,7 @@ function sendOrder(){
 let msg="Yeni Sipariş:%0A";
 
 cart.forEach(c=>{
-msg+=`- ${c.name} ${c.price}TL%0A`;
+msg+=`- ${c.name} (${c.price}TL) - ${c.custom}%0A`;
 });
 
 window.open("https://wa.me/90XXXXXXXXXX?text="+msg);
