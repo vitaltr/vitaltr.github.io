@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Ödeme</title>
 
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+
+.box{
+background:white;
+padding:15px;
+border-radius:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#00d4ff;
+border:none;
+font-weight:bold;
+cursor:pointer;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>💳 Ödeme</h2>
+
+<div class="box">
+
+<input id="name" placeholder="Ad Soyad">
+<input id="address" placeholder="Adres">
+<input id="phone" placeholder="Telefon">
+
+<button onclick="pay()">SİPARİŞİ TAMAMLA</button>
+
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function pay(){
+
+if(!name.value || !address.value){
+alert("Eksik bilgi");
+return;
+}
+
+let order = {
+id:Date.now(),
+items:cart,
+name:name.value,
+address:address.value,
+phone:phone.value
+};
+
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+orders.push(order);
+
+localStorage.setItem("orders",JSON.stringify(orders));
+localStorage.removeItem("cart");
+
+alert("Sipariş alındı!");
+window.location.href="index.html";
+}
+</script>
+
+</body>
+</html>
