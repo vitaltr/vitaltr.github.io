@@ -37,8 +37,9 @@ background:#222;
 color:white;
 border:none;
 padding:6px 10px;
-border-radius:20px;
+border-radius:18px;
 cursor:pointer;
+font-size:12px;
 }
 
 .nav button.active{
@@ -49,9 +50,16 @@ color:black;
 /* GRID */
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:12px;
 padding:12px;
+}
+
+/* MOBİL */
+@media(max-width:768px){
+.container{
+grid-template-columns:1fr;
+}
 }
 
 .card{
@@ -63,34 +71,35 @@ box-shadow:0 5px 15px rgba(0,0,0,0.1);
 
 .card img{
 width:100%;
-height:160px;
+height:180px;
 object-fit:cover;
 }
 
-.body{
-padding:10px;
+@media(max-width:768px){
+.card img{height:220px;}
 }
 
-.price{
-color:green;
-font-weight:bold;
-}
+.body{padding:10px}
+
+.price{color:green;font-weight:bold}
 
 button{
 border:none;
-padding:6px;
+padding:6px 8px;
 border-radius:6px;
 cursor:pointer;
+font-size:12px;
 }
 
-.cartbtn{background:#00d4ff}
-.favbtn{background:#ff4d6d;color:white}
-
-/* MOBILE */
-@media(max-width:768px){
-.container{
-grid-template-columns:1fr;
+.actions{
+display:flex;
+gap:6px;
+margin-top:8px;
 }
+
+.cartbtn{
+background:#00d4ff;
+flex:1;
 }
 </style>
 </head>
@@ -106,10 +115,6 @@ grid-template-columns:1fr;
 <div class="container" id="products"></div>
 
 <script>
-/*
-📦 store = tüm veri
-localStorage içinde tutulur
-*/
 let store = JSON.parse(localStorage.getItem("store")) || {
 categories:[
 {
@@ -130,9 +135,8 @@ stock:5
 
 let active=0;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let fav = JSON.parse(localStorage.getItem("fav")) || [];
 
-/* KATEGORİLER */
+/* NAV */
 function renderNav(){
 let nav=document.getElementById("nav");
 nav.innerHTML="";
@@ -151,12 +155,17 @@ render();
 renderNav();
 }
 
-/* ÜRÜNLER */
+/* PRODUCTS */
 function render(){
 let box=document.getElementById("products");
 box.innerHTML="";
 
 let cat = store.categories[active];
+
+if(!cat || !cat.products.length){
+box.innerHTML="<p>Ürün yok</p>";
+return;
+}
 
 cat.products.forEach(p=>{
 
@@ -172,15 +181,17 @@ box.innerHTML+=`
 <div>Stok: ${p.stock}</div>
 <div class="price">${p.price} TL</div>
 
-<button class="cartbtn" onclick="addCart(${p.id})">Sepet</button>
-<button class="favbtn" onclick="favToggle(${p.id})">❤️</button>
+<div class="actions">
+<button class="cartbtn" onclick="addCart(${p.id})">Sepete Ekle</button>
+</div>
+
 </div>
 </div>
 `;
 });
 }
 
-/* SEPET */
+/* CART */
 function addCart(id){
 store.categories.forEach(c=>{
 c.products.forEach(p=>{
@@ -191,26 +202,10 @@ return;
 }
 cart.push(p);
 localStorage.setItem("cart",JSON.stringify(cart));
+alert("Eklendi");
 }
 });
 });
-}
-
-/* FAVORİ */
-function favToggle(id){
-let f = fav.find(x=>x.id===id);
-
-if(f){
-fav = fav.filter(x=>x.id!==id);
-}else{
-store.categories.forEach(c=>{
-c.products.forEach(p=>{
-if(p.id===id) fav.push(p);
-});
-});
-}
-
-localStorage.setItem("fav",JSON.stringify(fav));
 }
 
 renderNav();
