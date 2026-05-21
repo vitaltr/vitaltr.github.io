@@ -2,13 +2,13 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ADMIN</title>
+<title>ADMIN PANEL</title>
 
 <style>
 body{font-family:Arial;padding:20px}
-input,select,textarea{display:block;margin:5px 0;padding:8px;width:250px}
-button{padding:8px 12px;cursor:pointer}
-.box{border:1px solid #ddd;padding:10px;margin-top:10px}
+input,select,textarea{display:block;margin:5px 0;padding:8px;width:260px}
+button{padding:8px 12px;cursor:pointer;margin-top:5px}
+.box{border:1px solid #ddd;padding:10px;margin:10px 0}
 </style>
 </head>
 
@@ -25,6 +25,9 @@ button{padding:8px 12px;cursor:pointer}
 <input id="cat">
 <button onclick="addCat()">Ekle</button>
 
+<h3>Kategoriler</h3>
+<div id="catList"></div>
+
 <h3>Ürün Ekle</h3>
 
 <select id="category"></select>
@@ -34,14 +37,9 @@ button{padding:8px 12px;cursor:pointer}
 <input id="img" placeholder="Resim URL">
 <input id="desc" placeholder="Açıklama">
 
-<label>
-<input type="checkbox" id="personalize">
-Kişiselleştirme aktif
-</label>
+<label><input type="checkbox" id="personalize"> Kişiselleştirme</label>
 
-<textarea id="options" placeholder="Örn:
-Standart:0
-Özel:50"></textarea>
+<textarea id="options" placeholder="Standart:0&#10;Özel:50"></textarea>
 
 <button onclick="addProduct()">Ürün Ekle</button>
 
@@ -50,122 +48,103 @@ Standart:0
 </div>
 
 <script>
-/* =========================
-   DATA GARANTİ BAŞLAT
-========================= */
 let data = JSON.parse(localStorage.getItem("data")) || [];
 
-/* =========================
-   LOGIN
-========================= */
+/* LOGIN */
 function login(){
-const p = document.getElementById("pass").value;
-
-if(p === "1234"){
-document.getElementById("panel").style.display = "block";
-renderCats();
-renderList();
-}else{
-alert("Hatalı şifre");
-}
+if(pass.value==="1234"){
+panel.style.display="block";
+renderAll();
+}else alert("Hatalı şifre");
 }
 
-/* =========================
-   CATEGORY RENDER
-========================= */
-function renderCats(){
-let c = document.getElementById("category");
-c.innerHTML = "";
-
-data.forEach((x,i)=>{
-c.innerHTML += `<option value="${i}">${x.title}</option>`;
-});
+/* SAVE */
+function save(){
+localStorage.setItem("data",JSON.stringify(data));
+renderAll();
 }
 
-/* =========================
-   CATEGORY ADD
-========================= */
+/* CATEGORY ADD */
 function addCat(){
-let val = document.getElementById("cat").value;
-
-if(!val){
-alert("Kategori adı boş");
-return;
-}
-
-data.push({
-title: val,
-products:[]
-});
-
+if(!cat.value) return;
+data.push({title:cat.value,products:[]});
+cat.value="";
 save();
-renderCats();
-renderList();
 }
 
-/* =========================
-   PRODUCT ADD (FIXED)
-========================= */
+/* CATEGORY DELETE */
+function deleteCat(i){
+data.splice(i,1);
+save();
+}
+
+/* PRODUCT ADD */
 function addProduct(){
-let i = document.getElementById("category").value;
+let i=category.value;
+if(i==="") return;
 
-if(i === ""){
-alert("Kategori seç");
-return;
-}
-
-let optRaw = document.getElementById("options").value.trim();
-
-let opts = [];
-
-if(optRaw){
-opts = optRaw.split("\n").map(line=>{
-let [name,price] = line.split(":");
-return {
-name: name,
-price: parseInt(price) || 0
-};
-});
-}
+let opts = options.value.trim()
+? options.value.split("\n").map(x=>{
+let [n,p]=x.split(":");
+return {name:n,price:parseInt(p)||0};
+})
+: [];
 
 data[i].products.push({
-id: Date.now(),
-name: document.getElementById("name").value,
-price: parseInt(document.getElementById("price").value) || 0,
-img: document.getElementById("img").value,
-desc: document.getElementById("desc").value,
-personalize: document.getElementById("personalize").checked,
-options: opts
+id:Date.now(),
+name:name.value,
+price:parseInt(price.value)||0,
+img:img.value,
+desc:desc.value,
+personalize:personalize.checked,
+options:opts
 });
 
 save();
-renderList();
-
-alert("Ürün eklendi");
 }
 
-/* =========================
-   LIST
-========================= */
-function renderList(){
-let list = document.getElementById("list");
-list.innerHTML = "";
+/* RENDER ALL */
+function renderAll(){
+
+/* category dropdown */
+let c=document.getElementById("category");
+c.innerHTML="";
+
+data.forEach((x,i)=>{
+c.innerHTML+=`<option value="${i}">${x.title}</option>`;
+});
+
+/* category list */
+let catList=document.getElementById("catList");
+catList.innerHTML="";
 
 data.forEach((c,i)=>{
-list.innerHTML += `
+catList.innerHTML+=`
 <div class="box">
-<h3>${c.title}</h3>
-<p>Ürün sayısı: ${c.products.length}</p>
+<b>${c.title}</b>
+<button onclick="deleteCat(${i})">Kategori Sil</button>
 </div>
 `;
 });
-}
 
-/* =========================
-   SAVE
-========================= */
-function save(){
-localStorage.setItem("data", JSON.stringify(data));
+/* product list */
+let list=document.getElementById("list");
+list.innerHTML="";
+
+data.forEach((c,i)=>{
+list.innerHTML+=`
+<div class="box">
+<h4>${c.title}</h4>
+
+${c.products.map(p=>`
+<div>
+${p.name} - ${p.price} TL
+</div>
+`).join("")}
+
+</div>
+`;
+});
 }
 </script>
 
