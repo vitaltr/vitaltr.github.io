@@ -12,34 +12,35 @@ header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:14px 20px;
+padding:14px;
 background:#111;
 color:white;
 position:sticky;
 top:0;
 }
 
-.logo{font-weight:bold}
 .logo span{color:#00d4ff}
 
-.nav{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
 
 .nav button{
 background:#222;
-color:#fff;
+color:white;
 border:none;
 padding:6px 10px;
 border-radius:20px;
 cursor:pointer;
 }
 
-.nav button.active{
-background:#00d4ff;
-color:#000;
+.nav button.active{background:#00d4ff;color:#000}
+
+/* SEARCH */
+.search{
+padding:10px;
+width:100%;
+box-sizing:border-box;
+border:none;
+outline:none;
 }
 
 /* GRID */
@@ -50,7 +51,6 @@ gap:15px;
 padding:15px;
 }
 
-/* CARD */
 .card{
 background:#fff;
 border-radius:12px;
@@ -58,24 +58,23 @@ overflow:hidden;
 box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-.card img{
-width:100%;
-height:180px;
-object-fit:cover;
-}
+.card img{width:100%;height:180px;object-fit:cover}
 
 .body{padding:10px}
 
 .price{color:green;font-weight:bold}
 
-button.add{
+.btn{
 width:100%;
-padding:10px;
+padding:8px;
 border:none;
-background:linear-gradient(90deg,#00d4ff,#00ffa3);
-font-weight:bold;
 cursor:pointer;
+margin-top:5px;
+border-radius:8px;
 }
+
+.cart{background:#00d4ff}
+.fav{background:#ff4d6d;color:white}
 </style>
 </head>
 
@@ -86,12 +85,15 @@ cursor:pointer;
 <div class="nav" id="nav"></div>
 </header>
 
+<input class="search" id="search" oninput="search()" placeholder="Ürün ara">
+
 <div class="container" id="products"></div>
 
 <script>
 let store = JSON.parse(localStorage.getItem("store")) || {categories:[]};
 let active=0;
-let cart=[];
+let fav = JSON.parse(localStorage.getItem("fav")) || [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* NAV */
 function renderNav(){
@@ -112,7 +114,7 @@ render();
 renderNav();
 }
 
-/* PRODUCTS */
+/* RENDER */
 function render(){
 let box=document.getElementById("products");
 box.innerHTML="";
@@ -122,6 +124,7 @@ if(!store.categories.length) return;
 let cat = store.categories[active];
 
 cat.products.forEach(p=>{
+
 let img = p.img.includes("http") ? p.img : "images/"+p.img;
 
 box.innerHTML+=`
@@ -130,23 +133,66 @@ box.innerHTML+=`
 <div class="body">
 <h3>${p.name}</h3>
 <p>${p.desc}</p>
+
+<div>Stok: ${p.stock}</div>
 <div class="price">${p.price} TL</div>
-<button class="add" onclick="addCart(${p.id})">Sepete Ekle</button>
+
+<button class="btn cart" onclick='addCart(${p.id})'>Sepete Ekle</button>
+<button class="btn fav" onclick='toggleFav(${p.id})'>❤️</button>
 </div>
 </div>
 `;
 });
 }
 
+/* CART */
 function addCart(id){
 store.categories.forEach(c=>{
 c.products.forEach(p=>{
 if(p.id===id){
+if(p.stock<=0){alert("Stok yok");return;}
 cart.push(p);
+localStorage.setItem("cart",JSON.stringify(cart));
 }
 });
 });
-alert("Sepete eklendi: "+cart.length);
+}
+
+/* FAVORİ */
+function toggleFav(id){
+let found = fav.find(x=>x.id===id);
+
+if(found){
+fav = fav.filter(x=>x.id!==id);
+}else{
+store.categories.forEach(c=>{
+c.products.forEach(p=>{
+if(p.id===id) fav.push(p);
+});
+});
+}
+
+localStorage.setItem("fav",JSON.stringify(fav));
+}
+
+/* SEARCH */
+function search(){
+let val = search.value.toLowerCase();
+let cat = store.categories[active];
+
+let filtered = cat.products.filter(p=>
+p.name.toLowerCase().includes(val)
+);
+
+let box=document.getElementById("products");
+box.innerHTML="";
+
+filtered.forEach(p=>{
+box.innerHTML+=`
+<div class="card">
+<h3>${p.name}</h3>
+</div>`;
+});
 }
 
 renderNav();
