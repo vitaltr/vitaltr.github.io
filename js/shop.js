@@ -1,57 +1,51 @@
-let data = JSON.parse(localStorage.getItem("data")) || [
-{
-id:"p1",
-title:"Sayfa 1",
-products:[
-{name:"Ürün 1",price:100,img:"https://picsum.photos/200?1"},
-{name:"Ürün 2",price:200,img:"https://picsum.photos/200?2"},
-{name:"Ürün 3",price:300,img:"https://picsum.photos/200?3"},
-{name:"Ürün 4",price:400,img:"https://picsum.photos/200?4"},
-{name:"Ürün 5",price:500,img:"https://picsum.photos/200?5"}
-]
-}
-];
+let data = JSON.parse(localStorage.getItem("data")) || [];
 
 let cart=[];
 let active=0;
 
+/* MENÜ */
 function renderMenu(){
 let menu=document.getElementById("menu");
 menu.innerHTML="";
-data.forEach((p,i)=>{
-menu.innerHTML+=`<button onclick="openPage(${i})">${p.title}</button>`;
+
+data.forEach((c,i)=>{
+menu.innerHTML+=`
+<button onclick="openPage(${i})">${c.title}</button>
+`;
 });
 }
 
+/* SAYFA */
 function openPage(i){
 active=i;
 render();
 }
 
+/* ÜRÜN */
 function render(){
 let app=document.getElementById("app");
 app.innerHTML="";
+
+if(!data.length){
+app.innerHTML="<p>Ürün yok</p>";
+return;
+}
 
 data[active].products.forEach(p=>{
 app.innerHTML+=`
 <div class="product">
 <img src="${p.img}" width="150">
-
 <h3>${p.name}</h3>
 <p>${p.price} TL</p>
 
-<label>Açıklama</label>
-<input id="desc${p.name}" placeholder="Ürün açıklaması">
+<input id="c${p.id}" placeholder="Kişiselleştirme">
 
-<label>Kişiselleştirme</label>
-<input id="custom${p.name}" placeholder="İsim / yazı">
-
-<select id="opt${p.name}">
+<select id="s${p.id}">
 <option value="0">Standart</option>
-<option value="50">Özel +50 TL</option>
+<option value="50">Özel +50</option>
 </select>
 
-<button onclick="addCart('${p.name}',${p.price})">
+<button onclick="addCart('${p.name}',${p.price},'${p.id}')">
 Sepete Ekle
 </button>
 </div>
@@ -61,24 +55,26 @@ Sepete Ekle
 document.getElementById("cartCount").innerText=cart.length;
 }
 
-function addCart(name,price){
-let opt=document.querySelector(`#opt${name}`).value;
-let custom=document.querySelector(`#custom${name}`).value;
+/* SEPET */
+function addCart(name,price,id){
+let extra=parseInt(document.getElementById("s"+id).value);
+let custom=document.getElementById("c"+id).value;
 
 cart.push({
 name,
-price:price+parseInt(opt),
+price:price+extra,
 custom
 });
 
 document.getElementById("cartCount").innerText=cart.length;
 }
 
+/* SİPARİŞ */
 function sendOrder(){
-let msg="Yeni Sipariş:%0A";
+let msg="Sipariş:%0A";
 
 cart.forEach(c=>{
-msg+=`- ${c.name} (${c.price}TL) - ${c.custom}%0A`;
+msg+=`- ${c.name} ${c.price}TL ${c.custom}%0A`;
 });
 
 window.open("https://wa.me/90XXXXXXXXXX?text="+msg);
