@@ -1,1 +1,18 @@
+let data = JSON.parse(localStorage.getItem("data")||"[]");
 
+function login(){
+  if(document.getElementById("pass").value=="1234"){
+    document.getElementById("panel").style.display="block";
+  }
+}
+
+function add(){
+  data.push({
+    name: name.value,
+    basePrice: price.value,
+    img: img.value
+  });
+
+  localStorage.setItem("data",JSON.stringify(data));
+  alert("eklendi");
+}
