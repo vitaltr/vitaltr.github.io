@@ -8,15 +8,23 @@
 
 <h2>Admin Panel</h2>
 
-<input type="password" id="pass">
+<input type="password" id="pass" placeholder="Şifre">
 <button onclick="login()">Giriş</button>
 
 <div id="panel" style="display:none">
 
-<h3>Ürün Ekle</h3>
-<input id="name" placeholder="Ürün">
+<h3>➕ Ürün Ekle</h3>
+
+<input id="title" placeholder="Sayfa adı">
+<input id="name" placeholder="Ürün adı">
 <input id="price" placeholder="Fiyat">
-<button onclick="add()">Ekle</button>
+<input id="img" placeholder="resim">
+
+<button onclick="addProduct()">Ekle</button>
+
+<h3>🗑 Sayfa Sil</h3>
+<input id="del" placeholder="p1, p2">
+<button onclick="deletePage()">Sil</button>
 
 </div>
 
