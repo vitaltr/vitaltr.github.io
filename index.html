@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>VITAL SHOP PRO - Mobil</title>
+    <title>VITAL SHOP PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
         .fade-in {
             animation: fadeIn 0.3s ease-in;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         .toast {
             position: fixed;
-            bottom: 80px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: #1a202c;
@@ -34,21 +42,18 @@
             font-size: 14px;
             font-weight: 500;
         }
-        @keyframes slideUp {
-            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
         .product-card {
             touch-action: manipulation;
-            transition: transform 0.2s;
+            transition: transform 0.15s;
+            cursor: pointer;
         }
         .product-card:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
         .cart-badge {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             background: #ef4444;
             color: white;
             border-radius: 50%;
@@ -59,80 +64,161 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            border: 2px solid white;
         }
-        .sticky-cart {
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        .modal-overlay {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .product-detail-modal {
+            max-height: 92vh;
             background: white;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 24px 24px 0 0;
+            overflow-y: auto;
+        }
+        .product-image-large {
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
+            border-radius: 24px 24px 0 0;
+        }
+        .option-btn {
+            transition: all 0.2s;
+            border: 2px solid #e5e7eb;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            touch-action: manipulation;
+        }
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+        .option-btn.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .option-btn .price-tag {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .option-btn.selected .price-tag {
+            color: #2563eb;
+        }
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            background: white;
+        }
+        .quantity-btn:active {
+            transform: scale(0.92);
+            background: #f3f4f6;
+        }
+        .quantity-btn.minus:active {
+            background: #fee2e2;
+        }
+        .quantity-btn.plus:active {
+            background: #dbeafe;
         }
         @media (max-width: 640px) {
-            .product-card {
-                padding: 12px !important;
+            .product-image-large {
+                height: 200px;
+                font-size: 70px;
             }
-            .product-card h3 {
-                font-size: 14px !important;
+            .option-btn {
+                padding: 8px 12px;
+                font-size: 12px;
             }
-            .product-card p {
-                font-size: 11px !important;
-            }
-            select {
-                font-size: 13px !important;
-                padding: 8px !important;
-            }
-            button {
-                font-size: 13px !important;
-                padding: 8px 12px !important;
+            .quantity-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
             }
         }
         @media (max-width: 400px) {
             .product-grid {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
             }
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .kategori-btn {
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        .kategori-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans pb-24">
+<body class="bg-gray-50 font-sans pb-28">
 
-    <!-- Başlık -->
-    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 shadow-lg sticky top-0 z-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 shadow-lg sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" onclick="sepeteGit()">
                 <span class="text-2xl">🛒</span>
                 <div>
-                    <h1 class="text-lg font-bold leading-tight">VITAL SHOP PRO</h1>
-                    <p class="text-xs opacity-90 hidden sm:block">Mobil Sipariş Sistemi</p>
+                    <h1 class="text-lg font-bold leading-tight">VITAL SHOP</h1>
+                    <p class="text-xs opacity-90 hidden sm:block">Mobil Sipariş</p>
                 </div>
             </div>
-            <div class="relative">
-                <span class="text-xl">🛍️</span>
-                <span id="cart-count" class="cart-badge hidden">0</span>
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium" id="header-total">0 TL</span>
+                <div class="relative cursor-pointer" onclick="sepeteGit()">
+                    <span class="text-xl">🛍️</span>
+                    <span id="cart-count" class="cart-badge hidden">0</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-3 sm:p-4">
-        <!-- Kategori Filtre -->
+    <main class="max-w-6xl mx-auto p-3">
+        <!-- Kategoriler -->
         <div class="flex gap-2 overflow-x-auto pb-3 mb-3 scrollbar-hide snap-x">
-            <button onclick="filtrele('tum')" class="kategori-btn aktif whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white">Tümü</button>
-            <button onclick="filtrele('elektronik')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔌 Elektronik</button>
-            <button onclick="filtrele('etiket')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🏷️ Etiket</button>
-            <button onclick="filtrele('aksesuar')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔗 Aksesuar</button>
-            <button onclick="filtrele('kablo')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔌 Kablo</button>
+            <button onclick="filtrele('tum', event)" class="kategori-btn aktif whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm">🏠 Tümü</button>
+            <button onclick="filtrele('elektronik', event)" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700">🔌 Elektronik</button>
+            <button onclick="filtrele('etiket', event)" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700">🏷️ Etiket</button>
+            <button onclick="filtrele('aksesuar', event)" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700">🔗 Aksesuar</button>
+            <button onclick="filtrele('kablo', event)" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700">🔌 Kablo</button>
         </div>
 
-        <!-- Ürün Listesi -->
-        <div id="urun-listesi" class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-            <!-- Ürünler JavaScript ile eklenecek -->
+        <!-- Ürün Grid -->
+        <div id="urun-listesi" class="product-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
+            <!-- JS ile doldurulacak -->
         </div>
     </main>
 
-    <!-- Mobil Sepet - Alt Sabit -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 p-3 sm:p-4">
+    <!-- Alt Sepet -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-xl z-50 p-3">
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
-            <div class="flex-1 min-w-0">
+            <div class="flex-1 min-w-0" onclick="sepeteGit()">
                 <div class="flex items-center gap-2">
                     <span class="text-lg">🛍️</span>
                     <div class="truncate">
@@ -142,8 +228,8 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 sm:gap-3">
-                <span class="font-bold text-blue-600 text-lg sm:text-xl" id="sepet-toplam-mobil">0 TL</span>
-                <button onclick="sepeteGit()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition flex items-center gap-1 shadow-lg">
+                <span class="font-bold text-blue-600 text-lg" id="sepet-toplam-mobil">0 TL</span>
+                <button onclick="sepeteGit()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition shadow-lg flex items-center gap-1 active:scale-95">
                     <span>Sepet</span>
                     <span id="cart-count-mobil" class="bg-white text-blue-600 rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold">0</span>
                 </button>
@@ -154,17 +240,72 @@
     <!-- Toast -->
     <div id="toast" class="toast hidden"></div>
 
+    <!-- Ürün Detay Modal -->
+    <div id="product-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-overlay absolute inset-0" onclick="kapatDetay()"></div>
+        <div class="absolute bottom-0 left-0 right-0 product-detail-modal slide-up">
+            <!-- Kapatma -->
+            <div class="flex justify-center pt-3">
+                <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+            
+            <!-- Büyük Resim -->
+            <div id="modal-image" class="product-image-large">🔌</div>
+            
+            <!-- Detaylar -->
+            <div class="p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="modal-title" class="text-xl font-bold text-gray-800">Ürün Adı</h2>
+                        <p id="modal-desc" class="text-sm text-gray-500 mt-1">Açıklama</p>
+                    </div>
+                    <span id="modal-price" class="text-2xl font-bold text-blue-600">100 TL</span>
+                </div>
+
+                <!-- Özellik Seçenekleri -->
+                <div class="mt-4">
+                    <label class="text-sm font-semibold text-gray-700 block mb-2">📌 Özellik Seçin:</label>
+                    <div id="modal-options" class="grid grid-cols-2 gap-2">
+                        <!-- JS ile doldurulacak -->
+                    </div>
+                </div>
+
+                <!-- Adet Seçici -->
+                <div class="mt-4 flex items-center gap-4">
+                    <span class="text-sm font-semibold text-gray-700">Adet:</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="modalAdetDegistir(-1)" class="quantity-btn minus">−</button>
+                        <span id="modal-quantity" class="text-lg font-bold min-w-[30px] text-center">1</span>
+                        <button onclick="modalAdetDegistir(1)" class="quantity-btn plus">+</button>
+                    </div>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="mt-4 flex gap-2">
+                    <button onclick="modalSepeteEkle()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition text-sm active:scale-95 flex items-center justify-center gap-2">
+                        ➕ Sepete Ekle
+                    </button>
+                    <button onclick="kapatDetay()" class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition text-sm font-medium">
+                        ✕
+                    </button>
+                </div>
+            </div>
+            <div class="h-4"></div>
+        </div>
+    </div>
+
     <!-- Sepet Modal -->
-    <div id="sepet-modal" class="fixed inset-0 bg-black/50 z-[100] hidden">
-        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] flex flex-col animate-slide-up">
+    <div id="sepet-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-overlay absolute inset-0" onclick="kapatSepet()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] flex flex-col slide-up">
             <div class="p-4 border-b flex justify-between items-center sticky top-0 bg-white rounded-t-3xl">
                 <h2 class="text-xl font-bold flex items-center gap-2">
                     🛍️ Sepetim
                     <span class="text-sm font-normal text-gray-500" id="modal-sepet-adet">(0)</span>
                 </h2>
                 <div class="flex gap-2">
-                    <button onclick="sepetiTemizle()" class="text-red-500 text-sm font-medium">Temizle</button>
-                    <button onclick="sepeteGit()" class="text-gray-500 text-xl">✕</button>
+                    <button onclick="sepetiTemizle()" class="text-red-500 text-sm font-medium active:scale-95 transition">Temizle</button>
+                    <button onclick="kapatSepet()" class="text-gray-500 text-xl">✕</button>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto p-4" id="modal-sepet-listesi">
@@ -179,10 +320,10 @@
                     <span class="font-bold text-2xl text-blue-600" id="modal-sepet-toplam">0 TL</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="pdfIndir()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition text-sm flex items-center justify-center gap-2">
-                        📄 PDF İndir
+                    <button onclick="pdfIndir()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition text-sm active:scale-95 flex items-center justify-center gap-2">
+                        📄 PDF
                     </button>
-                    <button onclick="hizliDemoEkle()" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-lg text-white py-3 rounded-xl font-semibold transition text-sm">
+                    <button onclick="hizliDemoEkle(); kapatSepet();" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold transition text-sm active:scale-95">
                         ⚡ Demo
                     </button>
                 </div>
@@ -191,61 +332,63 @@
     </div>
 
     <script>
-        // Ürün verileri (10 ürün)
+        // ===== VERİLER =====
         const urunler = [
-            { id: 1, ad: 'PCB Kart Tipi A', fiyat: 100, aciklama: 'FR4 çift katmanlı', icon: '🔌', kategori: 'elektronik',
+            { id: 1, ad: 'PCB Kart Tipi A', fiyat: 100, aciklama: 'FR4 çift katmanlı PCB kart', icon: '🔌', kategori: 'elektronik', renk: 'bg-blue-100',
               ozellikler: ['Tek Katman', 'Çift Katman (+50 TL)', '4 Katman (+150 TL)'] },
-            { id: 2, ad: 'Pleksi Etiket', fiyat: 45, aciklama: 'Lazer kesim etiket', icon: '🏷️', kategori: 'etiket',
+            { id: 2, ad: 'Pleksi Etiket', fiyat: 45, aciklama: 'Lazer kesim endüstriyel etiket', icon: '🏷️', kategori: 'etiket', renk: 'bg-green-100',
               ozellikler: ['3mm Siyah', '3mm Şeffaf', '5mm Beyaz (+30 TL)'] },
-            { id: 3, ad: 'LED Gösterge', fiyat: 25, aciklama: 'RGB LED panel', icon: '💡', kategori: 'elektronik',
+            { id: 3, ad: 'LED Gösterge', fiyat: 25, aciklama: 'RGB LED panel gösterge', icon: '💡', kategori: 'elektronik', renk: 'bg-yellow-100',
               ozellikler: ['Kırmızı', 'Yeşil', 'Mavi (+10 TL)'] },
-            { id: 4, ad: 'Kablo Demeti', fiyat: 60, aciklama: '10\'lu jumper set', icon: '🔗', kategori: 'kablo',
+            { id: 4, ad: 'Kablo Demeti', fiyat: 60, aciklama: '10\'lu jumper kablo seti', icon: '🔗', kategori: 'kablo', renk: 'bg-red-100',
               ozellikler: ['10cm', '20cm (+15 TL)', '30cm (+25 TL)'] },
-            { id: 5, ad: 'USB Adaptör', fiyat: 35, aciklama: '5V 2A şarj adaptörü', icon: '🔋', kategori: 'elektronik',
+            { id: 5, ad: 'USB Adaptör', fiyat: 35, aciklama: '5V 2A şarj adaptörü', icon: '🔋', kategori: 'elektronik', renk: 'bg-purple-100',
               ozellikler: ['Beyaz', 'Siyah', 'Kırmızı (+5 TL)'] },
-            { id: 6, ad: 'Etiket Rulosu', fiyat: 30, aciklama: 'Termal etiket rulosu', icon: '📋', kategori: 'etiket',
+            { id: 6, ad: 'Etiket Rulosu', fiyat: 30, aciklama: 'Termal etiket rulosu', icon: '📋', kategori: 'etiket', renk: 'bg-orange-100',
               ozellikler: ['50x30mm', '70x40mm (+10 TL)', '100x50mm (+20 TL)'] },
-            { id: 7, ad: 'LCD Ekran', fiyat: 85, aciklama: '16x2 karakter LCD', icon: '🖥️', kategori: 'elektronik',
+            { id: 7, ad: 'LCD Ekran', fiyat: 85, aciklama: '16x2 karakter LCD ekran', icon: '🖥️', kategori: 'elektronik', renk: 'bg-cyan-100',
               ozellikler: ['Mavi Işık', 'Yeşil Işık', 'RGB (+25 TL)'] },
-            { id: 8, ad: 'Bağlantı Kablosu', fiyat: 20, aciklama: 'USB-C şarj kablosu', icon: '🔌', kategori: 'kablo',
+            { id: 8, ad: 'Bağlantı Kablosu', fiyat: 20, aciklama: 'USB-C şarj kablosu', icon: '🔌', kategori: 'kablo', renk: 'bg-gray-100',
               ozellikler: ['1m', '2m (+10 TL)', '3m (+20 TL)'] },
-            { id: 9, ad: 'Proje Kutusu', fiyat: 55, aciklama: 'Plastik proje kutusu', icon: '📦', kategori: 'aksesuar',
+            { id: 9, ad: 'Proje Kutusu', fiyat: 55, aciklama: 'Plastik proje kutusu', icon: '📦', kategori: 'aksesuar', renk: 'bg-amber-100',
               ozellikler: ['Küçük', 'Orta (+15 TL)', 'Büyük (+30 TL)'] },
-            { id: 10, ad: 'Direnç Seti', fiyat: 40, aciklama: '400 adet direnç seti', icon: '⚡', kategori: 'elektronik',
-              ozellikler: ['1/4W', '1/2W (+10 TL)', '1W (+20 TL)'] }
+            { id: 10, ad: 'Direnç Seti', fiyat: 40, aciklama: '400 adet direnç seti', icon: '⚡', kategori: 'elektronik', renk: 'bg-indigo-100',
+              ozellikler: ['1/4W', '1/2W (+10 TL)', '1W (+20 TL)'] },
+            { id: 11, ad: 'Termal Kağıt', fiyat: 25, aciklama: 'Termal yazıcı kağıdı', icon: '📄', kategori: 'etiket', renk: 'bg-teal-100',
+              ozellikler: ['50mm', '80mm (+8 TL)', '110mm (+15 TL)'] },
+            { id: 12, ad: 'Micro USB', fiyat: 15, aciklama: 'Micro USB şarj kablosu', icon: '🔌', kategori: 'kablo', renk: 'bg-slate-100',
+              ozellikler: ['1m', '2m (+8 TL)', '3m (+15 TL)'] }
         ];
 
         let sepet = [];
         let aktifKategori = 'tum';
+        let modalData = { urunIndex: 0, secilenOzellik: '', adet: 1 };
 
-        // Toast
+        // ===== TOAST =====
         function showToast(mesaj, renk = 'blue') {
             const toast = document.getElementById('toast');
             toast.textContent = mesaj;
             toast.className = `toast bg-${renk}-600 hidden`;
-            setTimeout(() => {
-                toast.classList.remove('hidden');
-                toast.style.opacity = '1';
-            }, 50);
+            setTimeout(() => toast.classList.remove('hidden'), 50);
             clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2000);
+            toast._timer = setTimeout(() => toast.classList.add('hidden'), 2000);
         }
 
-        // Filtrele
-        function filtrele(kategori) {
+        // ===== FİLTRE =====
+        function filtrele(kategori, e) {
             aktifKategori = kategori;
             document.querySelectorAll('.kategori-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-600', 'text-white');
                 btn.classList.add('bg-gray-200', 'text-gray-700');
             });
-            event.target.classList.remove('bg-gray-200', 'text-gray-700');
-            event.target.classList.add('bg-blue-600', 'text-white');
+            if (e) {
+                e.target.classList.remove('bg-gray-200', 'text-gray-700');
+                e.target.classList.add('bg-blue-600', 'text-white');
+            }
             renderUrunler();
         }
 
-        // Ürünleri render et
+        // ===== ÜRÜN LİSTESİ =====
         function renderUrunler() {
             const container = document.getElementById('urun-listesi');
             const filtrelenmis = aktifKategori === 'tum' 
@@ -254,58 +397,120 @@
             
             container.innerHTML = filtrelenmis.map((urun, index) => {
                 const realIndex = urunler.indexOf(urun);
+                const sepetteki = sepet.find(s => s.id === urun.id);
+                const adet = sepetteki ? sepetteki.adet : 0;
                 return `
-                    <div class="product-card bg-white p-3 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                    <div class="product-card bg-white p-3 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition" 
+                         onclick="detayAc(${realIndex})">
                         <div class="flex items-start justify-between mb-1">
-                            <span class="text-2xl">${urun.icon}</span>
+                            <span class="text-3xl">${urun.icon}</span>
                             <span class="text-xs font-bold text-blue-600">${urun.fiyat} TL</span>
                         </div>
                         <h3 class="font-bold text-sm text-gray-800 leading-tight">${urun.ad}</h3>
-                        <p class="text-gray-500 text-xs mb-2">${urun.aciklama}</p>
-                        <select id="attr-${realIndex}" class="w-full text-xs border rounded-lg p-1.5 bg-gray-50 focus:ring-2 focus:ring-blue-300 outline-none mb-2">
-                            ${urun.ozellikler.map(oz => `<option value="${oz}">${oz}</option>`).join('')}
-                        </select>
-                        <button onclick="sepeteEkle(${realIndex})" 
-                                class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1 touch-manipulation">
-                            ➕ Ekle
-                        </button>
+                        <p class="text-gray-500 text-xs mb-1">${urun.aciklama}</p>
+                        ${adet > 0 ? `<span class="text-xs text-blue-600 font-medium">🛒 ${adet} adet</span>` : ''}
                     </div>
                 `;
             }).join('');
         }
 
-        // Sepete ekle
-        function sepeteEkle(urunIndex) {
-            const urun = urunler[urunIndex];
-            const selectId = `attr-${urunIndex}`;
-            const secilenOzellik = document.getElementById(selectId)?.value || urun.ozellikler[0];
+        // ===== DETAY AÇ =====
+        function detayAc(index) {
+            const urun = urunler[index];
+            modalData.urunIndex = index;
+            modalData.adet = 1;
+            modalData.secilenOzellik = urun.ozellikler[0];
+
+            document.getElementById('modal-image').textContent = urun.icon;
+            document.getElementById('modal-image').className = `product-image-large ${urun.renk}`;
+            document.getElementById('modal-title').textContent = urun.ad;
+            document.getElementById('modal-desc').textContent = urun.aciklama;
+            document.getElementById('modal-price').textContent = urun.fiyat + ' TL';
+
+            // Özellikler
+            const optionsContainer = document.getElementById('modal-options');
+            optionsContainer.innerHTML = urun.ozellikler.map((oz, i) => {
+                const secili = i === 0 ? 'selected' : '';
+                const fiyatGoster = oz.includes('+') ? oz : '';
+                return `
+                    <div class="option-btn ${secili}" onclick="modalOzellikSec(${i})" data-index="${i}">
+                        ${oz.replace(/\(.*\)/, '').trim()}
+                        ${fiyatGoster ? `<span class="price-tag">${fiyatGoster}</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modal-quantity').textContent = '1';
             
-            let fiyat = urun.fiyat;
-            const ekstra = secilenOzellik.match(/\+(\d+)/);
-            if (ekstra) fiyat += parseInt(ekstra[1]);
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
             
-            const varOlan = sepet.find(item => item.ad === urun.ad && item.ozellik === secilenOzellik);
-            
-            if (varOlan) {
-                varOlan.adet += 1;
-                showToast(`${urun.ad} adet +1`, 'blue');
-            } else {
-                sepet.push({ 
-                    id: urun.id,
-                    ad: urun.ad, 
-                    fiyat, 
-                    ozellik: secilenOzellik, 
-                    adet: 1,
-                    icon: urun.icon
-                });
-                showToast(`${urun.ad} sepete eklendi ✅`, 'green');
-            }
-            sepetiGuncelle();
             // Haptic feedback
             if (navigator.vibrate) navigator.vibrate(10);
         }
 
-        // Sepetten çıkar
+        // ===== MODAL ÖZELLİK SEÇ =====
+        function modalOzellikSec(index) {
+            const urun = urunler[modalData.urunIndex];
+            const options = document.querySelectorAll('#modal-options .option-btn');
+            options.forEach((btn, i) => {
+                btn.classList.toggle('selected', i === index);
+            });
+            modalData.secilenOzellik = urun.ozellikler[index];
+            
+            // Fiyat güncelle
+            const secilen = urun.ozellikler[index];
+            let fiyat = urun.fiyat;
+            const ekstra = secilen.match(/\+(\d+)/);
+            if (ekstra) fiyat += parseInt(ekstra[1]);
+            document.getElementById('modal-price').textContent = fiyat + ' TL';
+        }
+
+        // ===== MODAL ADET DEĞİŞTİR =====
+        function modalAdetDegistir(delta) {
+            modalData.adet = Math.max(1, modalData.adet + delta);
+            document.getElementById('modal-quantity').textContent = modalData.adet;
+            
+            // Fiyat güncelle
+            const urun = urunler[modalData.urunIndex];
+            let fiyat = urun.fiyat;
+            const ekstra = modalData.secilenOzellik.match(/\+(\d+)/);
+            if (ekstra) fiyat += parseInt(ekstra[1]);
+            document.getElementById('modal-price').textContent = (fiyat * modalData.adet) + ' TL';
+        }
+
+        // ===== MODAL SEPETE EKLE =====
+        function modalSepeteEkle() {
+            const urun = urunler[modalData.urunIndex];
+            let fiyat = urun.fiyat;
+            const ekstra = modalData.secilenOzellik.match(/\+(\d+)/);
+            if (ekstra) fiyat += parseInt(ekstra[1]);
+            
+            const varOlan = sepet.find(item => 
+                item.id === urun.id && item.ozellik === modalData.secilenOzellik
+            );
+            
+            if (varOlan) {
+                varOlan.adet += modalData.adet;
+            } else {
+                sepet.push({
+                    id: urun.id,
+                    ad: urun.ad,
+                    fiyat: fiyat,
+                    ozellik: modalData.secilenOzellik,
+                    adet: modalData.adet,
+                    icon: urun.icon
+                });
+            }
+            
+            showToast(`${urun.ad} sepete eklendi ✅ (${modalData.adet} adet)`, 'green');
+            kapatDetay();
+            sepetiGuncelle();
+            
+            if (navigator.vibrate) navigator.vibrate(15);
+        }
+
+        // ===== SEPET İŞLEMLERİ =====
         function sepettenCikar(index) {
             const item = sepet[index];
             if (item.adet > 1) {
@@ -318,7 +523,6 @@
             sepetiGuncelle();
         }
 
-        // Sepeti temizle
         function sepetiTemizle() {
             if (sepet.length === 0) {
                 showToast('Zaten boş 🤷', 'gray');
@@ -329,58 +533,56 @@
             sepetiGuncelle();
         }
 
-        // Hızlı demo
         function hizliDemoEkle() {
             const demo = [
-                { index: 0, ozellik: 'Çift Katman (+50 TL)' },
-                { index: 1, ozellik: '3mm Şeffaf' },
-                { index: 2, ozellik: 'Mavi (+10 TL)' },
-                { index: 3, ozellik: '20cm (+15 TL)' },
-                { index: 7, ozellik: '2m (+10 TL)' }
+                { id: 1, ozellik: 'Çift Katman (+50 TL)' },
+                { id: 2, ozellik: '3mm Şeffaf' },
+                { id: 3, ozellik: 'Mavi (+10 TL)' },
+                { id: 4, ozellik: '20cm (+15 TL)' },
+                { id: 8, ozellik: '2m (+10 TL)' },
+                { id: 11, ozellik: '80mm (+8 TL)' }
             ];
             
-            demo.forEach(({index, ozellik}) => {
-                const urun = urunler[index];
+            demo.forEach(({id, ozellik}) => {
+                const urun = urunler.find(u => u.id === id);
+                if (!urun) return;
                 let fiyat = urun.fiyat;
                 const ekstra = ozellik.match(/\+(\d+)/);
                 if (ekstra) fiyat += parseInt(ekstra[1]);
                 
-                const varOlan = sepet.find(item => item.ad === urun.ad && item.ozellik === ozellik);
+                const varOlan = sepet.find(item => item.id === id && item.ozellik === ozellik);
                 if (varOlan) {
                     varOlan.adet += 1;
                 } else {
-                    sepet.push({ 
-                        id: urun.id,
-                        ad: urun.ad, 
-                        fiyat, 
-                        ozellik, 
-                        adet: 1,
-                        icon: urun.icon
-                    });
+                    sepet.push({ id: urun.id, ad: urun.ad, fiyat, ozellik, adet: 1, icon: urun.icon });
                 }
             });
             
-            showToast('⚡ 5 demo ürün eklendi!', 'purple');
+            showToast('⚡ 6 demo ürün eklendi!', 'purple');
             sepetiGuncelle();
         }
 
-        // Sepeti güncelle
+        // ===== SEPET GÜNCELLE =====
         function sepetiGuncelle() {
             const toplamFiyat = sepet.reduce((sum, item) => sum + (item.fiyat * item.adet), 0);
             const toplamAdet = sepet.reduce((sum, item) => sum + item.adet, 0);
 
-            // Ana sepet özet
+            // Header
+            document.getElementById('header-total').textContent = toplamFiyat + ' TL';
+            
+            // Alt sepet
             document.getElementById('sepet-ozet').textContent = sepet.length > 0 ? `${sepet.length} ürün` : 'Sepet boş';
             document.getElementById('sepet-adet').textContent = `${toplamAdet} ürün`;
             document.getElementById('sepet-toplam-mobil').textContent = toplamFiyat + ' TL';
             
-            // Sepet badge
+            // Badge
             const badge = document.getElementById('cart-count');
             const badgeMobil = document.getElementById('cart-count-mobil');
+            const goster = toplamAdet > 0 ? toplamAdet > 9 ? '9+' : toplamAdet : '0';
             if (toplamAdet > 0) {
                 badge.classList.remove('hidden');
-                badge.textContent = toplamAdet > 9 ? '9+' : toplamAdet;
-                badgeMobil.textContent = toplamAdet > 9 ? '9+' : toplamAdet;
+                badge.textContent = goster;
+                badgeMobil.textContent = goster;
             } else {
                 badge.classList.add('hidden');
                 badgeMobil.textContent = '0';
@@ -411,9 +613,9 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 ml-2">
-                            <button onclick="sepettenCikar(${index})" class="text-red-400 text-sm font-bold px-1">-</button>
+                            <button onclick="sepettenCikar(${index})" class="text-red-400 text-sm font-bold px-1 active:scale-90 transition">−</button>
                             <span class="font-medium text-sm min-w-[20px] text-center">${item.adet}</span>
-                            <button onclick="sepeteEkle(${urunler.findIndex(u => u.id === item.id)})" class="text-blue-600 text-sm font-bold px-1">+</button>
+                            <button onclick="sepeteHizliEkle(${index})" class="text-blue-600 text-sm font-bold px-1 active:scale-90 transition">+</button>
                             <span class="font-medium text-sm min-w-[50px] text-right">${item.fiyat * item.adet} TL</span>
                         </div>
                     </div>
@@ -421,9 +623,36 @@
             }
             
             modalToplam.textContent = toplamFiyat + ' TL';
+            
+            // Ürün listesini güncelle (adet göstergesi için)
+            renderUrunler();
         }
 
-        // Sepeti aç
+        // ===== SEPETE HIZLI EKLE =====
+        function sepeteHizliEkle(index) {
+            const item = sepet[index];
+            const urunIndex = urunler.findIndex(u => u.id === item.id);
+            if (urunIndex === -1) return;
+            
+            const varOlan = sepet.find(s => s.id === item.id && s.ozellik === item.ozellik);
+            if (varOlan) {
+                varOlan.adet += 1;
+            }
+            sepetiGuncelle();
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        // ===== MODAL KAPAT =====
+        function kapatDetay() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function kapatSepet() {
+            document.getElementById('sepet-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
         function sepeteGit() {
             const modal = document.getElementById('sepet-modal');
             modal.classList.toggle('hidden');
@@ -435,16 +664,15 @@
             }
         }
 
-        // PDF indir
+        // ===== PDF =====
         function pdfIndir() {
             if (sepet.length === 0) {
-                showToast('Sepet boş! Önce ürün ekleyin 😊', 'red');
+                showToast('Sepet boş! 😊', 'red');
                 return;
             }
             
             showToast('PDF oluşturuluyor... ⏳', 'blue');
             
-            // Geçici PDF içeriği oluştur
             const content = document.createElement('div');
             content.style.padding = '20px';
             content.style.fontFamily = 'Arial, sans-serif';
@@ -455,7 +683,7 @@
                 ${sepet.map(item => `
                     <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
                         <div>
-                            <strong>${item.ad}</strong>
+                            <strong>${item.icon} ${item.ad}</strong>
                             <div style="font-size: 12px; color: #666;">${item.ozellik} x${item.adet}</div>
                         </div>
                         <span style="font-weight: bold;">${item.fiyat * item.adet} TL</span>
@@ -471,34 +699,30 @@
                 </div>
             `;
 
-            const opt = {
+            html2pdf().set({
                 margin: 10,
                 filename: 'vital-shop-siparis.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, backgroundColor: '#ffffff' },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(content).save()
-                .then(() => showToast('PDF başarıyla indirildi 📄', 'green'))
-                .catch(() => showToast('PDF oluşturulamadı ❌', 'red'));
+            }).from(content).save()
+                .then(() => showToast('PDF indirildi 📄', 'green'))
+                .catch(() => showToast('PDF hatası ❌', 'red'));
         }
 
-        // Event listener'lar
+        // ===== BAŞLAT =====
         document.addEventListener('DOMContentLoaded', () => {
             renderUrunler();
             sepetiGuncelle();
             
-            // Modal dışına tıkla kapat
-            document.getElementById('sepet-modal').addEventListener('click', (e) => {
-                if (e.target === e.currentTarget) sepeteGit();
+            // Klavye ile kapat
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    kapatDetay();
+                    kapatSepet();
+                }
             });
         });
-
-        // PWA için service worker (isteğe bağlı)
-        if ('serviceWorker' in navigator) {
-            // Service worker kaydı
-        }
     </script>
 </body>
 </html>
