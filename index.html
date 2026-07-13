@@ -2,11 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VITAL SHOP PRO - Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>VITAL SHOP PRO - Mobil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
         .fade-in {
             animation: fadeIn 0.3s ease-in;
         }
@@ -16,133 +19,266 @@
         }
         .toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             background: #1a202c;
             color: white;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 50px;
             z-index: 1000;
             animation: slideUp 0.3s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
         }
         @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        .product-card {
+            touch-action: manipulation;
+            transition: transform 0.2s;
+        }
+        .product-card:active {
+            transform: scale(0.98);
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .sticky-cart {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: white;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        @media (max-width: 640px) {
+            .product-card {
+                padding: 12px !important;
+            }
+            .product-card h3 {
+                font-size: 14px !important;
+            }
+            .product-card p {
+                font-size: 11px !important;
+            }
+            select {
+                font-size: 13px !important;
+                padding: 8px !important;
+            }
+            button {
+                font-size: 13px !important;
+                padding: 8px 12px !important;
+            }
+        }
+        @media (max-width: 400px) {
+            .product-grid {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans">
+<body class="bg-gray-50 font-sans pb-24">
 
     <!-- Başlık -->
-    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 shadow-lg text-center">
-        <h1 class="text-3xl font-bold">🛒 VITAL SHOP PRO</h1>
-        <p class="text-sm opacity-90">Hızlı Sipariş ve Teklif Sistemi</p>
-    </header>
-
-    <main class="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <!-- Ürün Listesi -->
-        <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-xl font-semibold text-gray-700 border-b-2 border-blue-500 pb-2 flex items-center gap-2">
-                <span>📦</span> Ürünlerimiz
-            </h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="urun-listesi">
-                <!-- Ürünler JavaScript ile eklenecek -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🛒</span>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">VITAL SHOP PRO</h1>
+                    <p class="text-xs opacity-90 hidden sm:block">Mobil Sipariş Sistemi</p>
+                </div>
+            </div>
+            <div class="relative">
+                <span class="text-xl">🛍️</span>
+                <span id="cart-count" class="cart-badge hidden">0</span>
             </div>
         </div>
+    </header>
 
-        <!-- Sepet -->
-        <div class="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-gray-200 h-fit sticky top-4">
-            <h2 class="text-xl font-semibold border-b pb-2 mb-4 flex justify-between items-center">
-                <span>🛍️ Sepetiniz</span>
-                <button id="temizle-btn" class="text-xs text-red-500 hover:text-red-700 font-medium transition">🗑️ Temizle</button>
-            </h2>
-            
-            <div id="fatura-alani">
-                <div id="sepet-bos-uyari" class="text-gray-400 text-sm py-8 text-center">
-                    <span class="text-4xl block mb-2">🛒</span>
-                    Sepetiniz boş
-                </div>
-                <ul id="sepet-listesi" class="space-y-3 text-sm"></ul>
-                
-                <div class="border-t-2 mt-4 pt-3 flex justify-between items-center font-bold text-gray-800">
-                    <span class="text-lg">Toplam:</span>
-                    <span id="sepet-toplam" class="text-xl text-blue-600">0 TL</span>
-                </div>
-            </div>
+    <main class="max-w-6xl mx-auto p-3 sm:p-4">
+        <!-- Kategori Filtre -->
+        <div class="flex gap-2 overflow-x-auto pb-3 mb-3 scrollbar-hide snap-x">
+            <button onclick="filtrele('tum')" class="kategori-btn aktif whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white">Tümü</button>
+            <button onclick="filtrele('elektronik')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔌 Elektronik</button>
+            <button onclick="filtrele('etiket')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🏷️ Etiket</button>
+            <button onclick="filtrele('aksesuar')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔗 Aksesuar</button>
+            <button onclick="filtrele('kablo')" class="kategori-btn whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">🔌 Kablo</button>
+        </div>
 
-            <div class="space-y-2 mt-4">
-                <button id="pdf-btn" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                    📄 PDF İndir
-                </button>
-                <button id="hizli-ekle-btn" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
-                    ⚡ Hızlı Demo Ekle
-                </button>
-            </div>
+        <!-- Ürün Listesi -->
+        <div id="urun-listesi" class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+            <!-- Ürünler JavaScript ile eklenecek -->
         </div>
     </main>
 
-    <!-- Toast bildirim -->
+    <!-- Mobil Sepet - Alt Sabit -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 p-3 sm:p-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🛍️</span>
+                    <div class="truncate">
+                        <span class="font-semibold text-sm" id="sepet-ozet">Sepet boş</span>
+                        <span class="text-xs text-gray-500 block" id="sepet-adet">0 ürün</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span class="font-bold text-blue-600 text-lg sm:text-xl" id="sepet-toplam-mobil">0 TL</span>
+                <button onclick="sepeteGit()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition flex items-center gap-1 shadow-lg">
+                    <span>Sepet</span>
+                    <span id="cart-count-mobil" class="bg-white text-blue-600 rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
     <div id="toast" class="toast hidden"></div>
 
+    <!-- Sepet Modal -->
+    <div id="sepet-modal" class="fixed inset-0 bg-black/50 z-[100] hidden">
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] flex flex-col animate-slide-up">
+            <div class="p-4 border-b flex justify-between items-center sticky top-0 bg-white rounded-t-3xl">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    🛍️ Sepetim
+                    <span class="text-sm font-normal text-gray-500" id="modal-sepet-adet">(0)</span>
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="sepetiTemizle()" class="text-red-500 text-sm font-medium">Temizle</button>
+                    <button onclick="sepeteGit()" class="text-gray-500 text-xl">✕</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4" id="modal-sepet-listesi">
+                <div class="text-center text-gray-400 py-8">
+                    <span class="text-4xl block mb-2">🛒</span>
+                    Sepetiniz boş
+                </div>
+            </div>
+            <div class="p-4 border-t bg-gray-50 rounded-b-3xl">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-semibold text-gray-700">Toplam:</span>
+                    <span class="font-bold text-2xl text-blue-600" id="modal-sepet-toplam">0 TL</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="pdfIndir()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition text-sm flex items-center justify-center gap-2">
+                        📄 PDF İndir
+                    </button>
+                    <button onclick="hizliDemoEkle()" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-lg text-white py-3 rounded-xl font-semibold transition text-sm">
+                        ⚡ Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Ürün verileri
+        // Ürün verileri (10 ürün)
         const urunler = [
-            { id: 1, ad: 'PCB Kart Tipi A', fiyat: 100, aciklama: 'FR4 çift katmanlı PCB', icon: '🔌', 
+            { id: 1, ad: 'PCB Kart Tipi A', fiyat: 100, aciklama: 'FR4 çift katmanlı', icon: '🔌', kategori: 'elektronik',
               ozellikler: ['Tek Katman', 'Çift Katman (+50 TL)', '4 Katman (+150 TL)'] },
-            { id: 2, ad: 'Pleksi Etiket', fiyat: 45, aciklama: 'Lazer kesim endüstriyel etiket', icon: '🏷️',
+            { id: 2, ad: 'Pleksi Etiket', fiyat: 45, aciklama: 'Lazer kesim etiket', icon: '🏷️', kategori: 'etiket',
               ozellikler: ['3mm Siyah', '3mm Şeffaf', '5mm Beyaz (+30 TL)'] },
-            { id: 3, ad: 'LED Gösterge', fiyat: 25, aciklama: 'RGB LED panel gösterge', icon: '💡',
+            { id: 3, ad: 'LED Gösterge', fiyat: 25, aciklama: 'RGB LED panel', icon: '💡', kategori: 'elektronik',
               ozellikler: ['Kırmızı', 'Yeşil', 'Mavi (+10 TL)'] },
-            { id: 4, ad: 'Kablo Demeti', fiyat: 60, aciklama: '10'lu jumper kablo seti', icon: '🔗',
-              ozellikler: ['10cm', '20cm (+15 TL)', '30cm (+25 TL)'] }
+            { id: 4, ad: 'Kablo Demeti', fiyat: 60, aciklama: '10\'lu jumper set', icon: '🔗', kategori: 'kablo',
+              ozellikler: ['10cm', '20cm (+15 TL)', '30cm (+25 TL)'] },
+            { id: 5, ad: 'USB Adaptör', fiyat: 35, aciklama: '5V 2A şarj adaptörü', icon: '🔋', kategori: 'elektronik',
+              ozellikler: ['Beyaz', 'Siyah', 'Kırmızı (+5 TL)'] },
+            { id: 6, ad: 'Etiket Rulosu', fiyat: 30, aciklama: 'Termal etiket rulosu', icon: '📋', kategori: 'etiket',
+              ozellikler: ['50x30mm', '70x40mm (+10 TL)', '100x50mm (+20 TL)'] },
+            { id: 7, ad: 'LCD Ekran', fiyat: 85, aciklama: '16x2 karakter LCD', icon: '🖥️', kategori: 'elektronik',
+              ozellikler: ['Mavi Işık', 'Yeşil Işık', 'RGB (+25 TL)'] },
+            { id: 8, ad: 'Bağlantı Kablosu', fiyat: 20, aciklama: 'USB-C şarj kablosu', icon: '🔌', kategori: 'kablo',
+              ozellikler: ['1m', '2m (+10 TL)', '3m (+20 TL)'] },
+            { id: 9, ad: 'Proje Kutusu', fiyat: 55, aciklama: 'Plastik proje kutusu', icon: '📦', kategori: 'aksesuar',
+              ozellikler: ['Küçük', 'Orta (+15 TL)', 'Büyük (+30 TL)'] },
+            { id: 10, ad: 'Direnç Seti', fiyat: 40, aciklama: '400 adet direnç seti', icon: '⚡', kategori: 'elektronik',
+              ozellikler: ['1/4W', '1/2W (+10 TL)', '1W (+20 TL)'] }
         ];
 
         let sepet = [];
+        let aktifKategori = 'tum';
 
-        // Toast mesajı
+        // Toast
         function showToast(mesaj, renk = 'blue') {
             const toast = document.getElementById('toast');
             toast.textContent = mesaj;
-            toast.className = `toast bg-${renk}-600`;
-            toast.classList.remove('hidden');
+            toast.className = `toast bg-${renk}-600 hidden`;
             setTimeout(() => {
+                toast.classList.remove('hidden');
+                toast.style.opacity = '1';
+            }, 50);
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
                 toast.classList.add('hidden');
             }, 2000);
+        }
+
+        // Filtrele
+        function filtrele(kategori) {
+            aktifKategori = kategori;
+            document.querySelectorAll('.kategori-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+            renderUrunler();
         }
 
         // Ürünleri render et
         function renderUrunler() {
             const container = document.getElementById('urun-listesi');
-            container.innerHTML = urunler.map((urun, index) => `
-                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all fade-in">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 flex items-center gap-1">
-                                <span>${urun.icon}</span> ${urun.ad}
-                            </h3>
-                            <p class="text-gray-500 text-xs mb-2">${urun.aciklama}</p>
+            const filtrelenmis = aktifKategori === 'tum' 
+                ? urunler 
+                : urunler.filter(u => u.kategori === aktifKategori);
+            
+            container.innerHTML = filtrelenmis.map((urun, index) => {
+                const realIndex = urunler.indexOf(urun);
+                return `
+                    <div class="product-card bg-white p-3 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                        <div class="flex items-start justify-between mb-1">
+                            <span class="text-2xl">${urun.icon}</span>
+                            <span class="text-xs font-bold text-blue-600">${urun.fiyat} TL</span>
                         </div>
-                        <span class="text-blue-600 font-bold">${urun.fiyat} TL</span>
-                    </div>
-                    <div class="mb-2">
-                        <select id="attr-${index}" class="w-full text-xs border rounded-lg p-1.5 bg-gray-50 focus:ring-2 focus:ring-blue-300 outline-none">
+                        <h3 class="font-bold text-sm text-gray-800 leading-tight">${urun.ad}</h3>
+                        <p class="text-gray-500 text-xs mb-2">${urun.aciklama}</p>
+                        <select id="attr-${realIndex}" class="w-full text-xs border rounded-lg p-1.5 bg-gray-50 focus:ring-2 focus:ring-blue-300 outline-none mb-2">
                             ${urun.ozellikler.map(oz => `<option value="${oz}">${oz}</option>`).join('')}
                         </select>
+                        <button onclick="sepeteEkle(${realIndex})" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1 touch-manipulation">
+                            ➕ Ekle
+                        </button>
                     </div>
-                    <button onclick="sepeteEkle(${index})" 
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded-lg text-sm font-medium transition flex items-center justify-center gap-1">
-                        ➕ Sepete Ekle
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Sepete ekle
         function sepeteEkle(urunIndex) {
             const urun = urunler[urunIndex];
             const selectId = `attr-${urunIndex}`;
-            const secilenOzellik = document.getElementById(selectId).value;
+            const secilenOzellik = document.getElementById(selectId)?.value || urun.ozellikler[0];
             
             let fiyat = urun.fiyat;
             const ekstra = secilenOzellik.match(/\+(\d+)/);
@@ -152,19 +288,33 @@
             
             if (varOlan) {
                 varOlan.adet += 1;
-                showToast(`${urun.ad} (${secilenOzellik}) adedi artırıldı`, 'blue');
+                showToast(`${urun.ad} adet +1`, 'blue');
             } else {
-                sepet.push({ ad: urun.ad, fiyat, ozellik: secilenOzellik, adet: 1 });
+                sepet.push({ 
+                    id: urun.id,
+                    ad: urun.ad, 
+                    fiyat, 
+                    ozellik: secilenOzellik, 
+                    adet: 1,
+                    icon: urun.icon
+                });
                 showToast(`${urun.ad} sepete eklendi ✅`, 'green');
             }
             sepetiGuncelle();
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(10);
         }
 
         // Sepetten çıkar
         function sepettenCikar(index) {
             const item = sepet[index];
-            sepet.splice(index, 1);
-            showToast(`${item.ad} sepetten çıkarıldı`, 'red');
+            if (item.adet > 1) {
+                item.adet -= 1;
+                showToast(`${item.ad} adet -1`, 'orange');
+            } else {
+                sepet.splice(index, 1);
+                showToast(`${item.ad} çıkarıldı`, 'red');
+            }
             sepetiGuncelle();
         }
 
@@ -179,16 +329,17 @@
             sepetiGuncelle();
         }
 
-        // Hızlı demo ekle
+        // Hızlı demo
         function hizliDemoEkle() {
-            const demoUrunler = [
+            const demo = [
                 { index: 0, ozellik: 'Çift Katman (+50 TL)' },
                 { index: 1, ozellik: '3mm Şeffaf' },
-                { index: 2, ozellik: 'Kırmızı' },
-                { index: 3, ozellik: '20cm (+15 TL)' }
+                { index: 2, ozellik: 'Mavi (+10 TL)' },
+                { index: 3, ozellik: '20cm (+15 TL)' },
+                { index: 7, ozellik: '2m (+10 TL)' }
             ];
             
-            demoUrunler.forEach(({index, ozellik}) => {
+            demo.forEach(({index, ozellik}) => {
                 const urun = urunler[index];
                 let fiyat = urun.fiyat;
                 const ekstra = ozellik.match(/\+(\d+)/);
@@ -198,52 +349,90 @@
                 if (varOlan) {
                     varOlan.adet += 1;
                 } else {
-                    sepet.push({ ad: urun.ad, fiyat, ozellik, adet: 1 });
+                    sepet.push({ 
+                        id: urun.id,
+                        ad: urun.ad, 
+                        fiyat, 
+                        ozellik, 
+                        adet: 1,
+                        icon: urun.icon
+                    });
                 }
             });
             
-            showToast('⚡ Demo ürünler eklendi!', 'purple');
+            showToast('⚡ 5 demo ürün eklendi!', 'purple');
             sepetiGuncelle();
         }
 
         // Sepeti güncelle
         function sepetiGuncelle() {
-            const listeRef = document.getElementById('sepet-listesi');
-            const toplamRef = document.getElementById('sepet-toplam');
-            const uyariRef = document.getElementById('sepet-bos-uyari');
+            const toplamFiyat = sepet.reduce((sum, item) => sum + (item.fiyat * item.adet), 0);
+            const toplamAdet = sepet.reduce((sum, item) => sum + item.adet, 0);
+
+            // Ana sepet özet
+            document.getElementById('sepet-ozet').textContent = sepet.length > 0 ? `${sepet.length} ürün` : 'Sepet boş';
+            document.getElementById('sepet-adet').textContent = `${toplamAdet} ürün`;
+            document.getElementById('sepet-toplam-mobil').textContent = toplamFiyat + ' TL';
             
-            listeRef.innerHTML = '';
-            let toplamFiyat = 0;
-
-            if (sepet.length === 0) {
-                uyariRef.style.display = 'block';
-                toplamRef.innerText = '0 TL';
-                return;
+            // Sepet badge
+            const badge = document.getElementById('cart-count');
+            const badgeMobil = document.getElementById('cart-count-mobil');
+            if (toplamAdet > 0) {
+                badge.classList.remove('hidden');
+                badge.textContent = toplamAdet > 9 ? '9+' : toplamAdet;
+                badgeMobil.textContent = toplamAdet > 9 ? '9+' : toplamAdet;
+            } else {
+                badge.classList.add('hidden');
+                badgeMobil.textContent = '0';
             }
-            uyariRef.style.display = 'none';
 
-            sepet.forEach((item, index) => {
-                const itemTotal = item.fiyat * item.adet;
-                toplamFiyat += itemTotal;
-                listeRef.innerHTML += `
-                    <li class="flex justify-between items-start border-b pb-2 fade-in">
-                        <div class="flex-1">
-                            <span class="font-semibold text-gray-800 text-sm">${item.ad}</span>
-                            <div class="text-xs text-gray-500">${item.ozellik}</div>
-                            <div class="text-xs text-blue-600 mt-0.5">Adet: ${item.adet}</div>
-                        </div>
-                        <div class="text-right ml-2">
-                            <span class="font-medium text-sm">${itemTotal} TL</span>
-                            <button onclick="sepettenCikar(${index})" 
-                                    class="block text-xs text-red-400 hover:text-red-600 mt-0.5 transition">
-                                ✕
-                            </button>
-                        </div>
-                    </li>
+            // Modal sepet
+            const modalListe = document.getElementById('modal-sepet-listesi');
+            const modalToplam = document.getElementById('modal-sepet-toplam');
+            const modalAdet = document.getElementById('modal-sepet-adet');
+            
+            modalAdet.textContent = `(${toplamAdet})`;
+            
+            if (sepet.length === 0) {
+                modalListe.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <span class="text-4xl block mb-2">🛒</span>
+                        Sepetiniz boş
+                    </div>
                 `;
-            });
+            } else {
+                modalListe.innerHTML = sepet.map((item, index) => `
+                    <div class="flex items-center justify-between py-2 border-b fade-in">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-xl">${item.icon}</span>
+                            <div class="truncate">
+                                <div class="font-medium text-sm truncate">${item.ad}</div>
+                                <div class="text-xs text-gray-500 truncate">${item.ozellik}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 ml-2">
+                            <button onclick="sepettenCikar(${index})" class="text-red-400 text-sm font-bold px-1">-</button>
+                            <span class="font-medium text-sm min-w-[20px] text-center">${item.adet}</span>
+                            <button onclick="sepeteEkle(${urunler.findIndex(u => u.id === item.id)})" class="text-blue-600 text-sm font-bold px-1">+</button>
+                            <span class="font-medium text-sm min-w-[50px] text-right">${item.fiyat * item.adet} TL</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            modalToplam.textContent = toplamFiyat + ' TL';
+        }
 
-            toplamRef.innerText = toplamFiyat + ' TL';
+        // Sepeti aç
+        function sepeteGit() {
+            const modal = document.getElementById('sepet-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                sepetiGuncelle();
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
         }
 
         // PDF indir
@@ -253,9 +442,34 @@
                 return;
             }
             
-            const element = document.getElementById('fatura-alani');
-            const silButonlari = element.querySelectorAll('button');
-            silButonlari.forEach(b => b.style.display = 'none');
+            showToast('PDF oluşturuluyor... ⏳', 'blue');
+            
+            // Geçici PDF içeriği oluştur
+            const content = document.createElement('div');
+            content.style.padding = '20px';
+            content.style.fontFamily = 'Arial, sans-serif';
+            content.innerHTML = `
+                <h1 style="color: #2563eb; font-size: 24px; margin-bottom: 10px;">🛒 VITAL SHOP PRO</h1>
+                <p style="color: #666; margin-bottom: 20px;">Sipariş Özeti - ${new Date().toLocaleDateString('tr-TR')}</p>
+                <hr style="border: 1px solid #ddd; margin-bottom: 20px;">
+                ${sepet.map(item => `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <strong>${item.ad}</strong>
+                            <div style="font-size: 12px; color: #666;">${item.ozellik} x${item.adet}</div>
+                        </div>
+                        <span style="font-weight: bold;">${item.fiyat * item.adet} TL</span>
+                    </div>
+                `).join('')}
+                <hr style="border: 1px solid #ddd; margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;">
+                    <span>Toplam:</span>
+                    <span style="color: #2563eb;">${sepet.reduce((sum, item) => sum + (item.fiyat * item.adet), 0)} TL</span>
+                </div>
+                <div style="margin-top: 30px; color: #999; font-size: 12px; text-align: center;">
+                    Teşekkür ederiz! 🙏
+                </div>
+            `;
 
             const opt = {
                 margin: 10,
@@ -265,15 +479,9 @@
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save()
-                .then(() => {
-                    silButonlari.forEach(b => b.style.display = 'block');
-                    showToast('PDF başarıyla indirildi 📄', 'green');
-                })
-                .catch(() => {
-                    silButonlari.forEach(b => b.style.display = 'block');
-                    showToast('PDF oluşturulamadı ❌', 'red');
-                });
+            html2pdf().set(opt).from(content).save()
+                .then(() => showToast('PDF başarıyla indirildi 📄', 'green'))
+                .catch(() => showToast('PDF oluşturulamadı ❌', 'red'));
         }
 
         // Event listener'lar
@@ -281,10 +489,16 @@
             renderUrunler();
             sepetiGuncelle();
             
-            document.getElementById('temizle-btn').addEventListener('click', sepetiTemizle);
-            document.getElementById('pdf-btn').addEventListener('click', pdfIndir);
-            document.getElementById('hizli-ekle-btn').addEventListener('click', hizliDemoEkle);
+            // Modal dışına tıkla kapat
+            document.getElementById('sepet-modal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) sepeteGit();
+            });
         });
+
+        // PWA için service worker (isteğe bağlı)
+        if ('serviceWorker' in navigator) {
+            // Service worker kaydı
+        }
     </script>
 </body>
 </html>
