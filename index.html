@@ -1,241 +1,189 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>SHOP PRO</title>
-
-<style>
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI}
-
-body{
-margin:0;
-background:#f6f6f6;
-color:#111;
-}
-
-/* HEADER */
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px 14px;
-background:#fff;
-border-bottom:1px solid #eee;
-position:sticky;
-top:0;
-z-index:10;
-}
-
-.logo{font-weight:700}
-.logo span{color:#007aff}
-
-/* CATEGORY */
-.nav{
-display:flex;
-gap:8px;
-overflow-x:auto;
-padding:10px;
-background:#fff;
-border-bottom:1px solid #eee;
-}
-
-.nav button{
-white-space:nowrap;
-border:none;
-background:#f1f1f1;
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-cursor:pointer;
-}
-
-.nav button.active{
-background:#007aff;
-color:#fff;
-}
-
-/* GRID */
-.container{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-gap:10px;
-padding:10px;
-}
-
-/* MOBİL */
-@media(max-width:768px){
-.container{
-grid-template-columns:repeat(2,1fr);
-gap:8px;
-padding:8px;
-}
-}
-
-/* CARD */
-.card{
-background:#fff;
-border-radius:14px;
-overflow:hidden;
-box-shadow:0 2px 8px rgba(0,0,0,0.06);
-}
-
-.card img{
-width:100%;
-height:140px;
-object-fit:cover;
-}
-
-.body{padding:8px}
-
-.title{
-font-size:13px;
-font-weight:600;
-margin:0;
-}
-
-.desc{
-font-size:11px;
-color:#666;
-margin:4px 0;
-}
-
-.price{
-font-size:13px;
-font-weight:700;
-color:#1a7f37;
-margin-top:4px;
-}
-
-.btn{
-width:100%;
-border:none;
-padding:7px;
-border-radius:10px;
-font-size:12px;
-margin-top:6px;
-cursor:pointer;
-}
-
-.cart{
-background:#007aff;
-color:#fff;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAL SHOP PRO</title>
+    <!-- Tasarım için modern Tailwind CSS ve PDF dönüştürücü kütüphane -->
+    <script src="https://tailwindcss.com"></script>
+    <script src="https://cloudflare.com"></script>
 </head>
+<body class="bg-gray-100 font-sans pb-24">
 
-<body>
+    <!-- Başlık -->
+    <header class="bg-blue-600 text-white p-4 shadow-md text-center">
+        <h1 class="text-2xl font-bold">🛒 VITAL SHOP PRO</h1>
+        <p class="text-sm opacity-80">Gelişmiş Sipariş ve Teklif Oluşturma Sistemi</p>
+    </header>
 
-<header>
-<div class="logo">VITAL<span>SHOP</span></div>
-<button onclick="location.href='cart.html'">🛒</button>
-</header>
+    <main class="max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- ÜRÜN LİSTESİ (2 Kolon) -->
+        <div class="md:col-span-2 space-y-4">
+            <h2 class="text-xl font-semibold border-b pb-2">Ürünlerimiz</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Ürün 1 -->
+                <div class="bg-white p-4 rounded-lg shadow border flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">PCB Kart Tipi A</h3>
+                        <p class="text-gray-500 text-sm mb-3">Yüksek kaliteli FR4 çift katmanlı PCB.</p>
+                        <!-- Özellik Seçimi -->
+                        <div class="mb-3">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Katman Seçimi:</label>
+                            <select id="attr-p1" class="w-full text-sm border p-1 rounded bg-gray-50">
+                                <option value="Tek Katman (Standart)">Tek Katman (Standart)</option>
+                                <option value="Çift Katman (+50 TL)">Çift Katman (+50 TL)</option>
+                                <option value="4 Katman (+150 TL)">4 Katman (+150 TL)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-bold text-blue-600 text-lg">100 TL</span>
+                        <button onclick="sepeteEkle('PCB Kart Tipi A', 100, 'attr-p1')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition">Sepete Ekle</button>
+                    </div>
+                </div>
 
-<div class="nav" id="nav"></div>
-<div class="container" id="products"></div>
+                <!-- Ürün 2 -->
+                <div class="bg-white p-4 rounded-lg shadow border flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Özel Pleksi Etiket</h3>
+                        <p class="text-gray-500 text-sm mb-3">Lazer kesim, endüstriyel cihaz etiketi.</p>
+                        <!-- Özellik Seçimi -->
+                        <div class="mb-3">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Renk ve Kalınlık:</label>
+                            <select id="attr-p2" class="w-full text-sm border p-1 rounded bg-gray-50">
+                                <option value="3mm Siyah Standart">3mm Siyah Standart</option>
+                                <option value="3mm Şeffaf">3mm Şeffaf</option>
+                                <option value="5mm Opak Beyaz (+30 TL)">5mm Opak Beyaz (+30 TL)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-bold text-blue-600 text-lg">45 TL</span>
+                        <button onclick="sepeteEkle('Özel Pleksi Etiket', 45, 'attr-p2')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition">Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<script>
+        <!-- SEPET ALANI (1 Kolon) -->
+        <div class="bg-white p-4 rounded-lg shadow-md border h-fit">
+            <h2 class="text-xl font-semibold border-b pb-2 mb-4 flex justify-between items-center">
+                <span>Sepetiniz</span>
+                <button onclick="sepetiTemizle()" class="text-xs text-red-500 hover:underline">Temizle</button>
+            </h2>
+            
+            <!-- PDF ÇIKTISI ALINACAK ALAN -->
+            <div id="fatura-alani" class="bg-white p-2">
+                <div id="sepet-bos-uyari" class="text-gray-400 text-sm py-4 text-center">Sepetiniz boş.</div>
+                <ul id="sepet-listesi" class="space-y-3 text-sm"></ul>
+                
+                <div class="border-t mt-4 pt-3 flex justify-between font-bold text-gray-800">
+                    <span>Toplam:</span>
+                    <span id="sepet-toplam">0 TL</span>
+                </div>
+            </div>
 
-let store = JSON.parse(localStorage.getItem("store")) || {
-categories:[
-{
-name:"Genel",
-products:[
-{
-id:1,
-name:"Mouse",
-price:199,
-img:"1.jpg",
-desc:"Gaming mouse",
-stock:5
-},
-{
-id:2,
-name:"Keyboard",
-price:399,
-img:"2.jpg",
-desc:"Mechanical",
-stock:3
-}
-]
-}
-]
-};
+            <!-- PDF İNDİRME BUTONU -->
+            <button onclick="pdfIndir()" class="w-full mt-4 bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
+                📄 Sepeti PDF Olarak İndir
+            </button>
+        </div>
+    </main>
 
-let active = 0;
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    <!-- JavaScript Dinamikleri -->
+    <script>
+        let sepet = [];
 
-/* NAV */
-function renderNav(){
-let nav = document.getElementById("nav");
-nav.innerHTML="";
+        function sepeteEkle(urunAdi, fiyat, selectId) {
+            const secilenOzellik = document.getElementById(selectId).value;
+            
+            // Sepette aynı ürün ve aynı özellik var mı kontrol et
+            const varOlanUrun = sepet.find(item => item.ad === urunAdi && item.ozellik === secilenOzellik);
+            
+            if (varOlanUrun) {
+                varOlanUrun.adet += 1;
+            } else {
+                sepet.push({
+                    ad: urunAdi,
+                    fiyat: fiyat,
+                    ozellik: secilenOzellik,
+                    adet: 1
+                });
+            }
+            sepetiGuncelle();
+        }
 
-store.categories.forEach((c,i)=>{
-nav.innerHTML += `
-<button class="${i===active?'active':''}" onclick="openCat(${i})">
-${c.name}
-</button>`;
-});
-}
+        function sepettenCikar(index) {
+            sepet.splice(index, 1);
+            sepetiGuncelle();
+        }
 
-function openCat(i){
-active=i;
-render();
-renderNav();
-}
+        function sepetiTemizle() {
+            sepet = [];
+            sepetiGuncelle();
+        }
 
-/* PRODUCTS */
-function render(){
-let box=document.getElementById("products");
-box.innerHTML="";
+        function sepetiGuncelle() {
+            const listeRef = document.getElementById('sepet-listesi');
+            const toplamRef = document.getElementById('sepet-toplam');
+            const uyariRef = document.getElementById('sepet-bos-uyari');
+            
+            listeRef.innerHTML = '';
+            let toplamFiyat = 0;
 
-let cat = store.categories[active];
+            if (sepet.length === 0) {
+                uyariRef.style.display = 'block';
+            } else {
+                uyariRef.style.display = 'none';
+            }
 
-if(!cat || !cat.products.length){
-box.innerHTML="<p style='padding:10px'>Ürün yok</p>";
-return;
-}
+            sepet.forEach((item, index) => {
+                toplamFiyat += (item.fiyat * item.adet);
+                listeRef.innerHTML += `
+                    <li class="flex justify-between items-start border-b pb-2">
+                        <div>
+                            <span class="font-semibold text-gray-800">${item.ad}</span>
+                            <div class="text-xs text-gray-500">Özellik: ${item.ozellik}</div>
+                            <div class="text-xs text-blue-600">Adet: ${item.adet}</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-medium">${item.fiyat * item.adet} TL</span>
+                            <button onclick="sepettenCikar(${index})" class="block text-xs text-red-400 hover:text-red-600 mt-1 ml-auto">Sil</button>
+                        </div>
+                    </li>
+                `;
+            });
 
-cat.products.forEach(p=>{
+            toplamRef.innerText = toplamFiyat + ' TL';
+        }
 
-let img = p.img.startsWith("http") ? p.img : "images/"+p.img;
+        function pdfIndir() {
+            if (sepet.length === 0) {
+                alert("Lütfen önce sepete ürün ekleyin!");
+                return;
+            }
+            
+            const element = document.getElementById('fatura-alani');
+            
+            // PDF Tasarım Ayarları
+            const opt = {
+                margin:       10,
+                filename:     'vital-shop-sepetim.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-box.innerHTML += `
-<div class="card">
-<img src="${img}">
-<div class="body">
-<div class="title">${p.name}</div>
-<div class="desc">${p.desc}</div>
-<div class="price">${p.price} TL</div>
+            // Geçici olarak silme butonlarını PDF çıktısında gizle
+            const silButonlari = element.querySelectorAll('button');
+            silButonlari.forEach(b => b.style.display = 'none');
 
-<button class="btn cart" onclick="add(${p.id})">
-Sepete Ekle
-</button>
-
-</div>
-</div>
-`;
-});
-}
-
-/* CART */
-function add(id){
-store.categories.forEach(c=>{
-c.products.forEach(p=>{
-if(p.id===id){
-cart.push(p);
-localStorage.setItem("cart",JSON.stringify(cart));
-alert("Eklendi");
-}
-});
-});
-}
-
-renderNav();
-render();
-
-</script>
-
+            html2pdf().set(opt).from(element).save().then(() => {
+                // PDF indirildikten sonra butonları geri getir
+                silButonlari.forEach(b => b.style.display = 'block');
+            });
+        }
+    </script>
 </body>
 </html>
