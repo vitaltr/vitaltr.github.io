@@ -6,161 +6,56 @@
     <title>VITALSHOP — Admin Paneli</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f0f2f5;
-            color: #1a1a1a;
-            min-height: 100vh;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; color: #1a1a1a; min-height: 100vh; }
         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
 
-        /* Giriş Ekranı */
-        #login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; }
         #login-screen h1 { font-size: 28px; margin-bottom: 10px; }
         #login-screen p { color: #666; margin-bottom: 30px; }
 
-        .btn {
-            border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-google {
-            background: #fff;
-            color: #333;
-            border: 1px solid #dadce0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            margin: 0 auto;
-        }
-        .btn-google:hover { background: #f8f9fa; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .btn { border: none; padding: 14px 28px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-google { background: #fff; color: #333; border: 1px solid #dadce0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin: 0 auto; }
+        .btn-google:hover { background: #f8f9fa; }
         .btn-primary { background: #4285f4; color: #fff; width: 100%; }
         .btn-primary:hover { background: #3367d6; }
         .btn-primary:disabled { background: #a0c0f0; cursor: not-allowed; }
-        .btn-danger { background: #dc3545; color: #fff; padding: 6px 14px; font-size: 13px; border-radius: 6px; }
+        .btn-danger { background: #dc3545; color: #fff; padding: 6px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; }
         .btn-danger:hover { background: #c82333; }
-        .btn-logout {
-            background: transparent;
-            color: #dc3545;
-            border: 1px solid #dc3545;
-            padding: 8px 16px;
-            font-size: 14px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+        .btn-logout { background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 8px 16px; font-size: 14px; border-radius: 6px; cursor: pointer; }
         .btn-logout:hover { background: #dc3545; color: #fff; }
 
-        /* Admin Paneli */
         #admin-screen { display: none; }
-        .header {
-            background: #fff;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
+        .header { background: #fff; padding: 16px 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .header h1 { font-size: 20px; }
         .header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #666; }
         .header img { width: 32px; height: 32px; border-radius: 50%; }
 
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-        }
+        .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
 
         .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #333;
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #333; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 15px; font-family: inherit;
         }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4285f4;
-        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #4285f4; }
         .form-group textarea { resize: vertical; min-height: 80px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        .image-preview {
-            margin-top: 10px;
-            max-width: 200px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            display: none;
-        }
-        .image-info {
-            font-size: 13px;
-            color: #666;
-            margin-top: 6px;
-        }
-        .image-info.warning { color: #dc3545; font-weight: 600; }
+        .image-preview { margin-top: 10px; max-width: 200px; border-radius: 8px; border: 1px solid #ddd; display: none; }
+        .image-info { font-size: 13px; color: #666; margin-top: 6px; }
         .image-info.ok { color: #28a745; font-weight: 600; }
+        .image-info.error { color: #dc3545; font-weight: 600; }
 
-        /* Mesajlar */
-        .message {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            display: none;
-        }
+        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
         .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
         .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
         .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
 
-        /* Ürün Listesi */
-        .product-item {
-            display: flex;
-            gap: 12px;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
+        .product-item { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
         .product-item:last-child { border-bottom: none; }
-        .product-item img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            background: #f0f0f0;
-            flex-shrink: 0;
-        }
+        .product-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: #f0f0f0; flex-shrink: 0; }
         .product-item .info { flex: 1; min-width: 0; }
         .product-item .info h4 { font-size: 15px; margin-bottom: 4px; }
         .product-item .info p { font-size: 13px; color: #666; word-break: break-word; }
@@ -171,13 +66,11 @@
         @media (max-width: 500px) {
             .form-row { grid-template-columns: 1fr; }
             .header { flex-direction: column; align-items: flex-start; }
-            .product-item { flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
 
-<!-- GİRİŞ EKRANI -->
 <div id="login-screen">
     <div>
         <h1>🔧 VITALSHOP Admin</h1>
@@ -190,7 +83,6 @@
     </div>
 </div>
 
-<!-- ADMIN EKRANI -->
 <div id="admin-screen">
     <div class="header">
         <h1>🔧 Admin Paneli</h1>
@@ -204,7 +96,6 @@
     <div class="container">
         <div id="main-message" class="message"></div>
 
-        <!-- ÜRÜN EKLEME FORMU -->
         <div class="card">
             <h2>➕ Yeni Ürün Ekle</h2>
             <form id="product-form">
@@ -250,17 +141,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="product-image">Ürün Resmi (max 700 KB)</label>
-                    <input type="file" id="product-image" accept="image/jpeg,image/jpg,image/webp,image/png">
+                    <label for="product-image">Resim Linki</label>
+                    <input type="url" id="product-image" placeholder="https://vitaltr.github.io/images/urun.jpg">
+                    <div class="image-info">💡 Resmi GitHub'daki <b>images/</b> klasörüne yükleyin, linkini buraya yapıştırın.</div>
                     <img id="image-preview" class="image-preview" alt="Önizleme">
-                    <div id="image-info" class="image-info"></div>
+                    <div id="image-info-status" class="image-info"></div>
                 </div>
 
                 <button type="submit" id="submit-btn" class="btn btn-primary">Ürünü Kaydet</button>
             </form>
         </div>
 
-        <!-- ÜRÜN LİSTESİ -->
         <div class="card">
             <h2>📦 Mevcut Ürünler (<span id="product-count">0</span>)</h2>
             <div id="product-list" class="loading">Yükleniyor...</div>
@@ -268,19 +159,13 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-        getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-        getFirestore, collection, addDoc, deleteDoc, doc,
-        onSnapshot, query, orderBy, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // ============================================================
-    // 👇👇👇 BURAYA KENDİ firebaseConfig KODUNU YAPIŞTIR 👇👇👇
+    // 👇 BURAYA KENDİ firebaseConfig KODUNU YAPIŞTIR 👇
     // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
@@ -292,21 +177,15 @@
     measurementId: "G-C2ZL944MPR"
   };
     // ============================================================
-    // 👆👆👆 BURAYA KADAR 👆👆👆
+    // 👆 BURAYA KADAR 👆
     // ============================================================
 
-    // Firebase başlat
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ============================================================
-    // SADECE BU E-POSTA ADMİN OLABİLİR
-    // ============================================================
-    const ADMIN_EMAIL = "vitalelektronik@gmail.com";
-    // ============================================================
+    const ADMIN_EMAIL = "vitalekelektronik@gmail.com";
 
-    // Elementler
     const loginScreen = document.getElementById('login-screen');
     const adminScreen = document.getElementById('admin-screen');
     const loginMessage = document.getElementById('login-message');
@@ -315,20 +194,16 @@
     const submitBtn = document.getElementById('submit-btn');
     const imageInput = document.getElementById('product-image');
     const imagePreview = document.getElementById('image-preview');
-    const imageInfo = document.getElementById('image-info');
+    const imageInfoStatus = document.getElementById('image-info-status');
     const productList = document.getElementById('product-list');
     const productCount = document.getElementById('product-count');
 
-    // Mesaj göster
     function showMessage(el, text, type) {
         el.textContent = text;
         el.className = 'message ' + type;
         setTimeout(() => { el.className = 'message'; }, 4000);
     }
 
-    // ============================================================
-    // GİRİŞ / ÇIKIŞ
-    // ============================================================
     document.getElementById('google-login-btn').addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
         try {
@@ -342,16 +217,13 @@
         signOut(auth);
     });
 
-    // Oturum durumunu izle
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Admin mi kontrol et
             if (user.email !== ADMIN_EMAIL) {
-                showMessage(loginMessage, '❌ Bu hesap admin değil! Sadece yetkili e-posta giriş yapabilir.', 'error');
+                showMessage(loginMessage, '❌ Bu hesap admin değil!', 'error');
                 signOut(auth);
                 return;
             }
-            // Giriş başarılı
             loginScreen.style.display = 'none';
             adminScreen.style.display = 'block';
             document.getElementById('user-email').textContent = user.email;
@@ -363,60 +235,36 @@
         }
     });
 
-    // ============================================================
-    // RESİM ÖNİZLEME + BOYUT KONTROLÜ
-    // ============================================================
-    imageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
+    // Resim linki önizleme
+    imageInput.addEventListener('input', (e) => {
+        const url = e.target.value.trim();
         imagePreview.style.display = 'none';
-        imageInfo.textContent = '';
-        imageInfo.className = 'image-info';
+        imageInfoStatus.textContent = '';
+        imageInfoStatus.className = 'image-info';
 
-        if (!file) return;
+        if (!url) return;
 
-        const sizeKB = (file.size / 1024).toFixed(0);
-
-        // Boyut kontrolü
-        if (file.size > 700 * 1024) {
-            imageInfo.textContent = `❌ Resim çok büyük: ${sizeKB} KB (max 700 KB). Lütfen küçültün.`;
-            imageInfo.className = 'image-info warning';
-            imageInput.value = '';
+        if (!url.startsWith('http')) {
+            imageInfoStatus.textContent = '⚠️ Link "http" ile başlamalı';
+            imageInfoStatus.className = 'image-info error';
             return;
         }
 
-        // Boyut uyarısı
-        if (file.size > 500 * 1024) {
-            imageInfo.textContent = `⚠️ Resim ${sizeKB} KB — sınıra yakın ama kabul edilebilir.`;
-            imageInfo.className = 'image-info warning';
-        } else {
-            imageInfo.textContent = `✅ Resim boyutu: ${sizeKB} KB (uygun)`;
-            imageInfo.className = 'image-info ok';
-        }
-
-        // Önizleme göster
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            imagePreview.src = ev.target.result;
+        // Önizleme
+        const img = new Image();
+        img.onload = () => {
+            imagePreview.src = url;
             imagePreview.style.display = 'block';
+            imageInfoStatus.textContent = '✅ Resim yüklendi';
+            imageInfoStatus.className = 'image-info ok';
         };
-        reader.readAsDataURL(file);
+        img.onerror = () => {
+            imageInfoStatus.textContent = '❌ Resim bulunamadı. Linki kontrol edin.';
+            imageInfoStatus.className = 'image-info error';
+        };
+        img.src = url;
     });
 
-    // ============================================================
-    // RESMİ BASE64'E ÇEVİR
-    // ============================================================
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // ============================================================
-    // ÜRÜN EKLE
-    // ============================================================
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
@@ -428,27 +276,18 @@
             const category = document.getElementById('product-category').value;
             const description = document.getElementById('product-desc').value.trim();
             const tag = document.getElementById('product-tag').value;
-            const imageFile = imageInput.files[0];
-
-            let imageBase64 = '';
-            if (imageFile) {
-                imageBase64 = await fileToBase64(imageFile);
-            }
+            const imageUrl = imageInput.value.trim();
 
             await addDoc(collection(db, 'products'), {
-                name,
-                price,
-                category,
-                description,
-                tag,
-                image: imageBase64,
+                name, price, category, description, tag,
+                image: imageUrl,
                 createdAt: serverTimestamp()
             });
 
             showMessage(mainMessage, '✅ Ürün başarıyla eklendi!', 'success');
             productForm.reset();
             imagePreview.style.display = 'none';
-            imageInfo.textContent = '';
+            imageInfoStatus.textContent = '';
 
         } catch (error) {
             showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
@@ -458,9 +297,6 @@
         }
     });
 
-    // ============================================================
-    // ÜRÜNLERİ LİSTELE (Canlı)
-    // ============================================================
     function loadProducts() {
         const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
         onSnapshot(q, (snapshot) => {
@@ -476,21 +312,21 @@
                 const p = docSnap.data();
                 const item = document.createElement('div');
                 item.className = 'product-item';
+                const imgSrc = p.image || 'https://via.placeholder.com/60';
                 item.innerHTML = `
-                    <img src="${p.image || 'https://via.placeholder.com/60'}" alt="${p.name}">
+                    <img src="${imgSrc}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60'">
                     <div class="info">
                         <h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
                         <p>${p.category} — ${p.description || 'Açıklama yok'}</p>
                     </div>
                     <div style="text-align:right;">
                         <div class="price">${p.price} TL</div>
-                        <button class="btn btn-danger delete-btn" data-id="${docSnap.id}" style="margin-top:6px;">Sil</button>
+                        <button class="btn-danger delete-btn" data-id="${docSnap.id}" style="margin-top:6px;">Sil</button>
                     </div>
                 `;
                 productList.appendChild(item);
             });
 
-            // Silme butonlarını bağla
             productList.querySelectorAll('.delete-btn').forEach((btn) => {
                 btn.addEventListener('click', async (e) => {
                     const id = e.target.getAttribute('data-id');
