@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VITALSHOP Admin</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh}
@@ -79,6 +80,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer}
 .btn-detay{background:#2563eb;color:#fff}
 .btn-detay:hover{background:#1d4ed8}
+.btn-pdf{background:#8b5cf6;color:#fff}
+.btn-pdf:hover{background:#7c3aed}
 .btn-tamamla{background:#10b981;color:#fff}
 .btn-tamamla:hover{background:#059669}
 .btn-sil-sm{background:#dc3545;color:#fff}
@@ -469,6 +472,7 @@ item.innerHTML = `
 <div class="siparis-toplam">💰 ${s.toplam || 0} TL</div>
 <div class="siparis-actions">
 <button class="btn-sm btn-detay" data-detay="${docSnap.id}">📄 Detay</button>
+<button class="btn-sm btn-pdf" data-pdf="${docSnap.id}">📥 PDF İndir</button>
 ${durum === 'yeni' ? `<button class="btn-sm btn-tamamla" data-tamamla="${docSnap.id}">✓ Tamamlandı</button>` : ''}
 <button class="btn-sm btn-sil-sm" data-sil="${docSnap.id}">🗑️ Sil</button>
 </div>
@@ -508,6 +512,12 @@ detayBox.innerHTML = musteriHTML + '<div style="margin-top:10px"><strong>📦 Ü
 detayBox.style.display = 'block';
 });
 });
+container.querySelectorAll('[data-pdf]').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const id = e.target.getAttribute('data-pdf');
+window.siparisPdfIndir(id);
+});
+});
 container.querySelectorAll('[data-tamamla]').forEach(btn => {
 btn.addEventListener('click', async (e) => {
 const id = e.target.getAttribute('data-tamamla');
@@ -536,6 +546,72 @@ showMessage(mainMessage, '❌ Hata: ' + err.message, 'error');
 document.getElementById('siparis-listesi').innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.message + '</p>';
 });
 }
+
+window.siparisPdfIndir = function(id) {
+const s = siparislerCache[id];
+if (!s) { showMessage(mainMessage, '❌ Sipariş bulunamadı', 'error'); return; }
+
+const m = s.musteri || {};
+const tarih = s.tarih ? new Date(s.tarih).toLocaleString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+
+const musteriSatirlari = [];
+if (m.ad) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Ad Soyad:</span><span style="font-weight:600;color:#1e293b">' + m.ad + '</span></div>');
+if (m.tel) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Telefon:</span><span style="font-weight:600;color:#1e293b">' + m.tel + '</span></div>');
+if (m.email) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">E-posta:</span><span style="font-weight:600;color:#1e293b">' + m.email + '</span></div>');
+if (m.adres) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Adres:</span><span style="font-weight:600;color:#1e293b">' + m.adres + '</span></div>');
+if (m.sehir) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Şehir:</span><span style="font-weight:600;color:#1e293b">' + m.sehir + '</span></div>');
+if (m.ilce) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">İlçe:</span><span style="font-weight:600;color:#1e293b">' + m.ilce + '</span></div>');
+if (m.posta) musteriSatirlari.push('<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Posta Kodu:</span><span style="font-weight:600;color:#1e293b">' + m.posta + '</span></div>');
+
+const musteriHTML = musteriSatirlari.length > 0
+? '<div style="background:#f8fafc;padding:16px;border-radius:12px;margin-bottom:20px"><h3 style="font-size:14px;font-weight:700;color:#334155;margin-bottom:10px">👤 MÜŞTERİ BİLGİLERİ</h3>' + musteriSatirlari.join('') + '</div>'
+: '';
+
+const content = document.createElement('div');
+content.style.padding = '30px';
+content.style.fontFamily = 'Arial, sans-serif';
+content.style.background = '#ffffff';
+content.style.color = '#1e293b';
+content.innerHTML = `
+<div style="text-align:center;margin-bottom:24px;border-bottom:3px solid #2563eb;padding-bottom:16px">
+<h1 style="color:#1e293b;font-size:28px;font-weight:800;margin-bottom:4px">VITAL<span style="color:#2563eb">SHOP</span></h1>
+<p style="color:#64748b;font-size:12px">Premium Electronics</p>
+<div style="margin-top:12px;display:flex;justify-content:space-between;font-size:12px;color:#64748b">
+<span>Sipariş No: <b style="color:#1e293b">${s.siparisNo || '—'}</b></span>
+<span>${tarih}</span>
+</div>
+</div>
+${musteriHTML}
+<h3 style="font-size:14px;font-weight:700;color:#334155;margin-bottom:10px">📦 SİPARİŞ İÇERİĞİ</h3>
+${(s.urunler || []).map((u, i) => `
+<div style="padding:12px 0;border-bottom:1px solid #f1f5f9">
+<div style="display:flex;justify-content:space-between">
+<div style="font-weight:600;font-size:14px;color:#1e293b">${i+1}. ${u.ad}</div>
+<span style="font-weight:700;font-size:15px;color:#2563eb">${u.fiyat * u.adet} TL</span>
+</div>
+<div style="font-size:12px;color:#64748b;margin-top:2px">Adet: ${u.adet}${u.variant ? ' • 🎨 ' + u.variant : ''}</div>
+${u.note ? `<div style="font-size:12px;color:#d97706;background:#fffbeb;padding:6px 10px;border-radius:6px;margin-top:6px">📝 Not: ${u.note}</div>` : ''}
+</div>
+`).join('')}
+<div style="display:flex;justify-content:space-between;padding:16px 0;margin-top:12px;border-top:2px solid #1e293b">
+<span style="font-size:16px;font-weight:700">TOPLAM</span>
+<span style="font-size:22px;font-weight:800;color:#2563eb">${s.toplam} TL</span>
+</div>
+<div style="margin-top:30px;color:#94a3b8;font-size:11px;text-align:center;border-top:1px solid #e5e7eb;padding-top:20px">
+Teşekkür ederiz! 🙏<br>VITALSHOP - Premium Electronics
+</div>
+`;
+
+html2pdf().set({
+margin: 15,
+filename: 'siparis-' + (s.siparisNo || 'belge').replace('#','') + '.pdf',
+image: { type: 'jpeg', quality: 0.98 },
+html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+}).from(content).save()
+.then(() => showMessage(mainMessage, '📄 PDF indirildi', 'success'))
+.catch((err) => { showMessage(mainMessage, '❌ PDF hatası: ' + err.message, 'error'); });
+};
 </script>
 </body>
 </html>
