@@ -386,7 +386,7 @@
                 ad: p.name || 'İsimsiz Ürün',
                 fiyat: Number(p.price) || 0,
                 aciklama: p.description || '',
-                img: p.image || 'https://via.placeholder.com/400x400/f1f5f9/94a3b8?text=Resim+Yok',
+                img: p.image || 'https://vitaltr.github.io/images/logo.png',
                 kategori: p.category || 'diger',
                 badge: p.tag || '',
                 badgeClass: badgeClassFromTag(p.tag),
@@ -447,7 +447,7 @@
             return `
                 <div class="product-card fade-in-up" onclick="detayAc(${realIndex})" style="animation-delay: ${index * 0.05}s">
                     <div class="image-wrapper">
-                        <img src="${urun.img}" alt="${urun.ad}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400/f1f5f9/94a3b8?text=Resim+Yok'">
+                        <img src="${urun.img}" alt="${urun.ad}" loading="lazy" onerror="this.src='https://vitaltr.github.io/images/logo.png'">
                         ${urun.badge ? `<span class="${badgeClass}">${urun.badge}</span>` : ''}
                         ${adet > 0 ? `<div class="absolute bottom-3 right-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">${adet} adet</div>` : ''}
                     </div>
@@ -662,7 +662,7 @@
         } else {
             modalListe.innerHTML = sepet.map((item, index) => `
                 <div class="sepet-item flex items-start justify-between py-3 border-b border-gray-100 gap-3">
-                    <img src="${item.img}" class="w-12 h-12 object-contain rounded-xl bg-gray-50 p-1.5 border border-gray-100 flex-shrink-0" onerror="this.src='https://via.placeholder.com/60'">
+                    <img src="${item.img}" class="w-12 h-12 object-contain rounded-xl bg-gray-50 p-1.5 border border-gray-100 flex-shrink-0" onerror="this.src='https://vitaltr.github.io/images/logo.png/60'">
                     <div class="flex-1 min-w-0">
                         <div class="font-semibold text-sm truncate">${item.ad}</div>
                         ${item.variant ? `<div class="text-xs text-blue-600 mt-1">🎨 ${item.variant}</div>` : ''}
