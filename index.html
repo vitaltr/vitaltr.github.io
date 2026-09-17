@@ -592,7 +592,10 @@ const mIlce = document.getElementById('m-ilce').value.trim();
 const mPosta = document.getElementById('m-posta').value.trim();
 const mEmail = document.getElementById('m-email').value.trim();
 const mAdres = document.getElementById('m-adres').value.trim();
-
+if (siparisNo) {
+    showToast('⚠️ Bu sipariş zaten kaydedildi. Yeni sipariş için sayfayı yenileyin.', 'orange');
+    return;
+}
 siparisNo = siparisNoUret();
 showToast('⏳ PDF hazırlanıyor...', 'blue');
 
