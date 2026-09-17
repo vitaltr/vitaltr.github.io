@@ -142,13 +142,8 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 </header>
 
 <main>
-<div class="kategoriler">
-<button class="kategori-btn aktif" data-kat="tum" onclick="filtrele('tum',this)">🏠 Tümü</button>
-<button class="kategori-btn" data-kat="elektronik" onclick="filtrele('elektronik',this)">💻 Elektronik</button>
-<button class="kategori-btn" data-kat="kablo" onclick="filtrele('kablo',this)">🔌 Kablo</button>
-<button class="kategori-btn" data-kat="motor" onclick="filtrele('motor',this)">⚙️ Motor</button>
-<button class="kategori-btn" data-kat="sensor" onclick="filtrele('sensor',this)">📡 Sensör</button>
-<button class="kategori-btn" data-kat="aksesuar" onclick="filtrele('aksesuar',this)">🎒 Aksesuar</button>
+<div class="kategoriler" id="kategoriler">
+<button class="kategori-btn aktif" onclick="filtrele('tum',this)">🏠 Tümü</button>
 </div>
 <div id="urun-listesi" class="product-grid">
 <div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b">Ürünler yükleniyor...</div>
@@ -269,6 +264,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let urunler = [];
+let kategoriler = [];
 let sepet = [];
 let aktifKategori = 'tum';
 let modalData = { index: 0, adet: 1, variant: 0 };
@@ -286,6 +282,16 @@ return '';
 
 function logoUrl() { return 'https://vitaltr.github.io/images/logo.png'; }
 
+// KATEGORİLERİ YÜKLE
+const kq = query(collection(db, 'categories'), orderBy('createdAt', 'asc'));
+onSnapshot(kq, (snapshot) => {
+kategoriler = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+renderKategoriler();
+}, (error) => {
+console.error('Kategori hatası:', error);
+});
+
+// ÜRÜNLERİ YÜKLE
 const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
 onSnapshot(q, (snapshot) => {
 urunler = snapshot.docs.map((d) => {
@@ -307,6 +313,18 @@ sepetGuncelle();
 }, (error) => {
 document.getElementById('urun-listesi').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#dc2626">⚠️ Ürünler yüklenemedi: ${error.message}</div>`;
 });
+
+function renderKategoriler() {
+const container = document.getElementById('kategoriler');
+container.innerHTML = `<button class="kategori-btn ${aktifKategori === 'tum' ? 'aktif' : ''}" onclick="filtrele('tum',this)">🏠 Tümü</button>`;
+kategoriler.forEach(k => {
+const btn = document.createElement('button');
+btn.className = 'kategori-btn' + (aktifKategori === k.slug ? ' aktif' : '');
+btn.innerHTML = `${k.ikon || '📦'} ${k.ad}`;
+btn.onclick = function() { filtrele(k.slug, this); };
+container.appendChild(btn);
+});
+}
 
 function showToast(msg, renk = 'blue') {
 const t = document.getElementById('toast');
@@ -672,14 +690,14 @@ durum: 'yeni',
 createdAt: serverTimestamp()
 });
 siparisKaydedildi = true;
-  // Sipariş başarıyla kaydedildi → sepeti otomatik boşalt
-setTimeout(() => {
-    sepet = [];
-    siparisKaydedildi = false;
-    siparisNo = '';
-    sepetGuncelle();
-}, 200);
 console.log('✅ Sipariş kaydedildi:', siparisNo);
+setTimeout(() => {
+sepet = [];
+siparisKaydedildi = false;
+siparisNo = '';
+sepetGuncelle();
+showToast('🛒 Sepet boşaltıldı. Yeni sipariş verebilirsiniz.', 'green');
+}, 2000);
 } catch (err) {
 console.error('❌ Sipariş kayıt hatası:', err);
 showToast('⚠️ Sipariş kaydedilemedi ama PDF indirilecek', 'orange');
