@@ -1,442 +1,429 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VITALSHOP — Admin Paneli</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; color: #1a1a1a; min-height: 100vh; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; }
-        #login-screen h1 { font-size: 28px; margin-bottom: 10px; }
-        #login-screen p { color: #666; margin-bottom: 30px; }
-
-        .btn { border: none; padding: 14px 28px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-google { background: #fff; color: #333; border: 1px solid #dadce0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin: 0 auto; }
-        .btn-google:hover { background: #f8f9fa; }
-        .btn-primary { background: #4285f4; color: #fff; width: 100%; }
-        .btn-primary:hover { background: #3367d6; }
-        .btn-primary:disabled { background: #a0c0f0; cursor: not-allowed; }
-        .btn-danger { background: #dc3545; color: #fff; padding: 6px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; }
-        .btn-danger:hover { background: #c82333; }
-        .btn-logout { background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 8px 16px; font-size: 14px; border-radius: 6px; cursor: pointer; }
-        .btn-logout:hover { background: #dc3545; color: #fff; }
-        .btn-secondary { background: #6c757d; color: #fff; padding: 8px 16px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; }
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-add-variant { background: #10b981; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; width: 100%; margin-top: 10px; }
-        .btn-add-variant:hover { background: #059669; }
-
-        #admin-screen { display: none; }
-        .header { background: #fff; padding: 16px 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-        .header h1 { font-size: 20px; }
-        .header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #666; }
-        .header img { width: 32px; height: 32px; border-radius: 50%; }
-
-        .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
-
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #333; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
-            font-size: 15px; font-family: inherit;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #4285f4; }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        .image-preview { margin-top: 10px; max-width: 200px; border-radius: 8px; border: 1px solid #ddd; display: none; }
-        .image-info { font-size: 13px; color: #666; margin-top: 6px; }
-        .image-info.ok { color: #28a745; font-weight: 600; }
-        .image-info.error { color: #dc3545; font-weight: 600; }
-
-        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
-        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
-        .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
-
-        /* Varyant Bölümü */
-        .variants-section { border: 2px dashed #d1d5db; border-radius: 12px; padding: 16px; margin-top: 16px; background: #fafbfc; }
-        .variants-section h3 { font-size: 15px; margin-bottom: 12px; color: #374151; display: flex; justify-content: space-between; align-items: center; }
-        .variants-section h3 span { font-size: 12px; font-weight: normal; color: #6b7280; }
-        .variant-row { display: grid; grid-template-columns: 2fr 1fr 2fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .variant-row input { padding: 8px 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; }
-        .variant-row input:focus { outline: none; border-color: #4285f4; }
-        .variant-row .remove-btn { background: #ef4444; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .variant-row .remove-btn:hover { background: #dc2626; }
-        .variants-empty { text-align: center; color: #9ca3af; font-size: 13px; padding: 12px; }
-
-        .product-item { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
-        .product-item:last-child { border-bottom: none; }
-        .product-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: #f0f0f0; flex-shrink: 0; }
-        .product-item .info { flex: 1; min-width: 0; }
-        .product-item .info h4 { font-size: 15px; margin-bottom: 4px; }
-        .product-item .info p { font-size: 13px; color: #666; word-break: break-word; }
-        .product-item .info .variant-badge { display: inline-block; background: #eff6ff; color: #2563eb; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
-        .product-item .price { font-weight: 700; color: #4285f4; font-size: 15px; }
-
-        .loading { text-align: center; padding: 20px; color: #666; }
-
-        @media (max-width: 500px) {
-            .form-row { grid-template-columns: 1fr; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .variant-row { grid-template-columns: 1fr; }
-            .variant-row .remove-btn { width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITALSHOP Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:20px}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}
+#login-screen h1{font-size:28px;margin-bottom:10px}
+#login-screen p{color:#666;margin-bottom:30px}
+.btn{border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-google{background:#fff;color:#333;border:1px solid #dadce0;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin:0 auto}
+.btn-google:hover{background:#f8f9fa}
+.btn-primary{background:#4285f4;color:#fff;width:100%}
+.btn-primary:hover{background:#3367d6}
+.btn-primary:disabled{background:#a0c0f0;cursor:not-allowed}
+.btn-danger{background:#dc3545;color:#fff;padding:6px 14px;font-size:13px;border-radius:6px;cursor:pointer;border:none}
+.btn-danger:hover{background:#c82333}
+.btn-edit{background:#f59e0b;color:#fff;padding:6px 14px;font-size:13px;border-radius:6px;cursor:pointer;border:none;margin-right:5px}
+.btn-edit:hover{background:#d97706}
+.btn-logout{background:transparent;color:#dc3545;border:1px solid #dc3545;padding:8px 16px;font-size:14px;border-radius:6px;cursor:pointer}
+.btn-logout:hover{background:#dc3545;color:#fff}
+.btn-cancel{background:#6c757d;color:#fff;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;border:none;width:100%;margin-top:10px}
+.btn-cancel:hover{background:#5a6268}
+#admin-screen{display:none}
+.header{background:#fff;padding:16px 20px;border-bottom:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.header h1{font-size:20px}
+.header .user-info{display:flex;align-items:center;gap:12px;font-size:14px;color:#666}
+.header img{width:32px;height:32px;border-radius:50%}
+.card{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h2{font-size:18px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #eee}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#333}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:15px;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#4285f4}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.image-preview{margin-top:10px;max-width:200px;border-radius:8px;border:1px solid #ddd;display:none}
+.image-info{font-size:13px;color:#666;margin-top:6px}
+.image-info.ok{color:#28a745;font-weight:600}
+.image-info.error{color:#dc3545;font-weight:600}
+.message{padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;display:none}
+.message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;display:block}
+.message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;display:block}
+.message.info{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb;display:block}
+.variants-section{border:2px dashed #d1d5db;border-radius:12px;padding:16px;margin-top:16px;background:#fafbfc}
+.variants-section h3{font-size:15px;margin-bottom:12px;color:#374151;display:flex;justify-content:space-between;align-items:center}
+.variants-section h3 span{font-size:12px;font-weight:normal;color:#6b7280}
+.variant-row{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:8px;margin-bottom:8px;align-items:center}
+.variant-row input{padding:8px 10px;font-size:14px;border:1px solid #ddd;border-radius:6px;width:100%}
+.variant-row input:focus{outline:none;border-color:#4285f4}
+.variant-row .remove-btn{background:#ef4444;color:#fff;border:none;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;font-weight:bold}
+.variant-row .remove-btn:hover{background:#dc2626}
+.variants-empty{text-align:center;color:#9ca3af;font-size:13px;padding:12px}
+.btn-add-variant{background:#10b981;color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;width:100%;margin-top:10px}
+.btn-add-variant:hover{background:#059669}
+.product-item{display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee;align-items:center}
+.product-item:last-child{border-bottom:none}
+.product-item img{width:60px;height:60px;object-fit:cover;border-radius:8px;background:#f0f0f0;flex-shrink:0}
+.product-item .info{flex:1;min-width:0}
+.product-item .info h4{font-size:15px;margin-bottom:4px}
+.product-item .info p{font-size:13px;color:#666;word-break:break-word}
+.product-item .info .variant-badge{display:inline-block;background:#eff6ff;color:#2563eb;font-size:11px;padding:2px 8px;border-radius:10px;margin-top:4px}
+.product-item .price{font-weight:700;color:#4285f4;font-size:15px}
+.loading{text-align:center;padding:20px;color:#666}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}.variant-row{grid-template-columns:1fr}.variant-row .remove-btn{width:100%}}
+</style>
 </head>
 <body>
 
 <div id="login-screen">
-    <div>
-        <h1>🔧 VITALSHOP Admin</h1>
-        <p>Yönetici paneli — devam etmek için giriş yapın</p>
-        <button id="google-login-btn" class="btn btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
-            Google ile Giriş Yap
-        </button>
-        <div id="login-message" class="message"></div>
-    </div>
+<div>
+<h1>🔧 VITALSHOP Admin</h1>
+<p>Yönetici paneli — devam etmek için giriş yapın</p>
+<button id="google-login-btn" class="btn btn-google">
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+Google ile Giriş Yap
+</button>
+<div id="login-message" class="message"></div>
+</div>
 </div>
 
 <div id="admin-screen">
-    <div class="header">
-        <h1>🔧 Admin Paneli</h1>
-        <div class="user-info">
-            <img id="user-photo" src="" alt="">
-            <span id="user-email"></span>
-            <button id="logout-btn" class="btn-logout">Çıkış</button>
-        </div>
-    </div>
+<div class="header">
+<h1>🔧 Admin Paneli</h1>
+<div class="user-info">
+<img id="user-photo" src="" alt="">
+<span id="user-email"></span>
+<button id="logout-btn" class="btn-logout">Çıkış</button>
+</div>
+</div>
 
-    <div class="container">
-        <div id="main-message" class="message"></div>
+<div class="container">
+<div id="main-message" class="message"></div>
 
-        <div class="card">
-            <h2>➕ Yeni Ürün Ekle</h2>
-            <form id="product-form">
-                <div class="form-group">
-                    <label for="product-name">Ürün Adı *</label>
-                    <input type="text" id="product-name" placeholder="Örn: PCB Kart" required>
-                </div>
+<div class="card">
+<h2 id="form-title">➕ Yeni Ürün Ekle</h2>
+<form id="product-form">
+<div class="form-group">
+<label for="product-name">Ürün Adı *</label>
+<input type="text" id="product-name" placeholder="Örn: PCB Kart" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="product-price">Ana Fiyat (TL) *</label>
+<input type="number" id="product-price" placeholder="100" min="0" step="0.01" required>
+</div>
+<div class="form-group">
+<label for="product-category">Kategori *</label>
+<select id="product-category" required>
+<option value="">Seçiniz...</option>
+<option value="elektronik">Elektronik</option>
+<option value="kablo">Kablo</option>
+<option value="motor">Motor</option>
+<option value="sensor">Sensör</option>
+<option value="aksesuar">Aksesuar</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label for="product-desc">Açıklama</label>
+<textarea id="product-desc" placeholder="Kısa ürün açıklaması"></textarea>
+</div>
+<div class="form-group">
+<label for="product-tag">Etiket (opsiyonel)</label>
+<select id="product-tag">
+<option value="">Etiket yok</option>
+<option value="⭐ Popüler">⭐ Popüler</option>
+<option value="🔥 Çok Satan">🔥 Çok Satan</option>
+<option value="✨ Yeni">✨ Yeni</option>
+<option value="💰 İndirim">💰 İndirim</option>
+<option value="💎 Premium">💎 Premium</option>
+<option value="💸 Fırsat">💸 Fırsat</option>
+</select>
+</div>
+<div class="form-group">
+<label for="product-image">Ana Resim Linki</label>
+<input type="url" id="product-image" placeholder="https://vitaltr.github.io/images/urun.jpg">
+<div class="image-info">💡 Resmi GitHub'daki <b>images/</b> klasörüne yükleyin, linkini buraya yapıştırın.</div>
+<img id="image-preview" class="image-preview" alt="Önizleme">
+<div id="image-info-status" class="image-info"></div>
+</div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="product-price">Ana Fiyat (TL) *</label>
-                        <input type="number" id="product-price" placeholder="100" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-category">Kategori *</label>
-                        <select id="product-category" required>
-                            <option value="">Seçiniz...</option>
-                            <option value="elektronik">Elektronik</option>
-                            <option value="kablo">Kablo</option>
-                            <option value="motor">Motor</option>
-                            <option value="sensor">Sensör</option>
-                            <option value="aksesuar">Aksesuar</option>
-                        </select>
-                    </div>
-                </div>
+<div class="variants-section">
+<h3>🎨 Ürün Özellikleri (Varyantlar) <span>Opsiyonel</span></h3>
+<div id="variants-list"></div>
+<div class="variants-empty" id="variants-empty">Henüz özellik eklenmedi.</div>
+<button type="button" id="add-variant-btn" class="btn-add-variant">+ Yeni Özellik Ekle</button>
+</div>
 
-                <div class="form-group">
-                    <label for="product-desc">Açıklama</label>
-                    <textarea id="product-desc" placeholder="Kısa ürün açıklaması"></textarea>
-                </div>
+<button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top:20px;">Ürünü Kaydet</button>
+<button type="button" id="cancel-edit-btn" class="btn-cancel" style="display:none;">İptal</button>
+</form>
+</div>
 
-                <div class="form-group">
-                    <label for="product-tag">Etiket (opsiyonel)</label>
-                    <select id="product-tag">
-                        <option value="">Etiket yok</option>
-                        <option value="⭐ Popüler">⭐ Popüler</option>
-                        <option value="🔥 Çok Satan">🔥 Çok Satan</option>
-                        <option value="✨ Yeni">✨ Yeni</option>
-                        <option value="💰 İndirim">💰 İndirim</option>
-                        <option value="💎 Premium">💎 Premium</option>
-                        <option value="💸 Fırsat">💸 Fırsat</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="product-image">Ana Resim Linki</label>
-                    <input type="url" id="product-image" placeholder="https://vitaltr.github.io/images/urun.jpg">
-                    <div class="image-info">💡 Resmi GitHub'daki <b>images/</b> klasörüne yükleyin, linkini buraya yapıştırın.</div>
-                    <img id="image-preview" class="image-preview" alt="Önizleme">
-                    <div id="image-info-status" class="image-info"></div>
-                </div>
-
-                <!-- VARYANTLAR -->
-                <div class="variants-section">
-                    <h3>
-                        🎨 Ürün Özellikleri (Varyantlar)
-                        <span>Opsiyonel</span>
-                    </h3>
-                    <div id="variants-list"></div>
-                    <div class="variants-empty" id="variants-empty">Henüz özellik eklenmedi. Aşağıdaki butona tıklayarak ekleyin.</div>
-                    <button type="button" id="add-variant-btn" class="btn-add-variant">+ Yeni Özellik Ekle</button>
-                </div>
-
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top: 20px;">Ürünü Kaydet</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>📦 Mevcut Ürünler (<span id="product-count">0</span>)</h2>
-            <div id="product-list" class="loading">Yükleniyor...</div>
-        </div>
-    </div>
+<div class="card">
+<h2>📦 Mevcut Ürünler (<span id="product-count">0</span>)</h2>
+<div id="product-list" class="loading">Yükleniyor...</div>
+</div>
+</div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ============================================================
-    // 👇 BURAYA KENDİ firebaseConfig KODUNU YAPIŞTIR 👇
-    // ============================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
-    authDomain: "vitalweb-c3290.firebaseapp.com",
-    projectId: "vitalweb-c3290",
-    storageBucket: "vitalweb-c3290.firebasestorage.app",
-    messagingSenderId: "204342714119",
-    appId: "1:204342714119:web:7d61d6f853eef3d790efa2",
-    measurementId: "G-C2ZL944MPR"
-  };
-    // ============================================================
+const firebaseConfig = {
+apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
+authDomain: "vitalweb-c3290.firebaseapp.com",
+projectId: "vitalweb-c3290",
+storageBucket: "vitalweb-c3290.firebasestorage.app",
+messagingSenderId: "204342714119",
+appId: "1:204342714119:web:7d61d6f853eef3d790efa2",
+measurementId: "G-C2ZL944MPR"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const ADMIN_EMAIL = "vitalelektronik@gmail.com";
+const ADMIN_EMAIL = "vitalelektronik@gmail.com";
 
-    const loginScreen = document.getElementById('login-screen');
-    const adminScreen = document.getElementById('admin-screen');
-    const loginMessage = document.getElementById('login-message');
-    const mainMessage = document.getElementById('main-message');
-    const productForm = document.getElementById('product-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const imageInput = document.getElementById('product-image');
-    const imagePreview = document.getElementById('image-preview');
-    const imageInfoStatus = document.getElementById('image-info-status');
-    const productList = document.getElementById('product-list');
-    const productCount = document.getElementById('product-count');
-    const variantsList = document.getElementById('variants-list');
-    const variantsEmpty = document.getElementById('variants-empty');
-    const addVariantBtn = document.getElementById('add-variant-btn');
+const loginScreen = document.getElementById('login-screen');
+const adminScreen = document.getElementById('admin-screen');
+const loginMessage = document.getElementById('login-message');
+const mainMessage = document.getElementById('main-message');
+const productForm = document.getElementById('product-form');
+const submitBtn = document.getElementById('submit-btn');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const formTitle = document.getElementById('form-title');
+const imageInput = document.getElementById('product-image');
+const imagePreview = document.getElementById('image-preview');
+const imageInfoStatus = document.getElementById('image-info-status');
+const productList = document.getElementById('product-list');
+const productCount = document.getElementById('product-count');
+const variantsList = document.getElementById('variants-list');
+const variantsEmpty = document.getElementById('variants-empty');
+const addVariantBtn = document.getElementById('add-variant-btn');
 
-    let variantCounter = 0;
+let variantCounter = 0;
+let editingId = null;
 
-    function showMessage(el, text, type) {
-        el.textContent = text;
-        el.className = 'message ' + type;
-        setTimeout(() => { el.className = 'message'; }, 4000);
-    }
+function showMessage(el, text, type) {
+el.textContent = text;
+el.className = 'message ' + type;
+setTimeout(() => { el.className = 'message'; }, 4000);
+}
 
-    // ============================================================
-    // GİRİŞ / ÇIKIŞ
-    // ============================================================
-    document.getElementById('google-login-btn').addEventListener('click', async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-        } catch (error) {
-            showMessage(loginMessage, 'Giriş hatası: ' + error.message, 'error');
-        }
-    });
+document.getElementById('google-login-btn').addEventListener('click', async () => {
+const provider = new GoogleAuthProvider();
+try { await signInWithPopup(auth, provider); } catch (error) { showMessage(loginMessage, 'Giriş hatası: ' + error.message, 'error'); }
+});
 
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        signOut(auth);
-    });
+document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if (user.email !== ADMIN_EMAIL) {
-                showMessage(loginMessage, '❌ Bu hesap admin değil!', 'error');
-                signOut(auth);
-                return;
-            }
-            loginScreen.style.display = 'none';
-            adminScreen.style.display = 'block';
-            document.getElementById('user-email').textContent = user.email;
-            document.getElementById('user-photo').src = user.photoURL || '';
-            loadProducts();
-        } else {
-            loginScreen.style.display = 'flex';
-            adminScreen.style.display = 'none';
-        }
-    });
+onAuthStateChanged(auth, (user) => {
+if (user) {
+if (user.email !== ADMIN_EMAIL) {
+showMessage(loginMessage, '❌ Bu hesap admin değil!', 'error');
+signOut(auth);
+return;
+}
+loginScreen.style.display = 'none';
+adminScreen.style.display = 'block';
+document.getElementById('user-email').textContent = user.email;
+document.getElementById('user-photo').src = user.photoURL || '';
+loadProducts();
+} else {
+loginScreen.style.display = 'flex';
+adminScreen.style.display = 'none';
+}
+});
 
-    // ============================================================
-    // RESİM ÖNİZLEME
-    // ============================================================
-    imageInput.addEventListener('input', (e) => {
-        const url = e.target.value.trim();
-        imagePreview.style.display = 'none';
-        imageInfoStatus.textContent = '';
-        imageInfoStatus.className = 'image-info';
+imageInput.addEventListener('input', (e) => {
+const url = e.target.value.trim();
+imagePreview.style.display = 'none';
+imageInfoStatus.textContent = '';
+imageInfoStatus.className = 'image-info';
+if (!url) return;
+if (!url.startsWith('http')) {
+imageInfoStatus.textContent = '⚠️ Link "http" ile başlamalı';
+imageInfoStatus.className = 'image-info error';
+return;
+}
+const img = new Image();
+img.onload = () => {
+imagePreview.src = url;
+imagePreview.style.display = 'block';
+imageInfoStatus.textContent = '✅ Resim yüklendi';
+imageInfoStatus.className = 'image-info ok';
+};
+img.onerror = () => {
+imageInfoStatus.textContent = '❌ Resim bulunamadı.';
+imageInfoStatus.className = 'image-info error';
+};
+img.src = url;
+});
 
-        if (!url) return;
+function createVariantRow(ad = '', fark = '', img = '') {
+variantCounter++;
+const row = document.createElement('div');
+row.className = 'variant-row';
+row.innerHTML = `
+<input type="text" placeholder="Özellik adı" value="${ad}" data-field="ad">
+<input type="number" placeholder="Fark (TL)" value="${fark}" step="0.01" data-field="fark">
+<input type="url" placeholder="Resim linki" value="${img}" data-field="img">
+<button type="button" class="remove-btn">✕</button>
+`;
+row.querySelector('.remove-btn').addEventListener('click', () => { row.remove(); updateVariantsEmpty(); });
+variantsList.appendChild(row);
+updateVariantsEmpty();
+}
 
-        if (!url.startsWith('http')) {
-            imageInfoStatus.textContent = '⚠️ Link "http" ile başlamalı';
-            imageInfoStatus.className = 'image-info error';
-            return;
-        }
+function updateVariantsEmpty() {
+variantsEmpty.style.display = variantsList.children.length > 0 ? 'none' : 'block';
+}
 
-        const img = new Image();
-        img.onload = () => {
-            imagePreview.src = url;
-            imagePreview.style.display = 'block';
-            imageInfoStatus.textContent = '✅ Resim yüklendi';
-            imageInfoStatus.className = 'image-info ok';
-        };
-        img.onerror = () => {
-            imageInfoStatus.textContent = '❌ Resim bulunamadı. Linki kontrol edin.';
-            imageInfoStatus.className = 'image-info error';
-        };
-        img.src = url;
-    });
+addVariantBtn.addEventListener('click', () => { createVariantRow(); });
 
-    // ============================================================
-    // VARYANT EKLEME
-    // ============================================================
-    function createVariantRow(ad = '', fark = '', img = '') {
-        variantCounter++;
-        const id = variantCounter;
-        const row = document.createElement('div');
-        row.className = 'variant-row';
-        row.dataset.variantId = id;
-        row.innerHTML = `
-            <input type="text" placeholder="Özellik adı (örn: Çift Katman)" value="${ad}" data-field="ad">
-            <input type="number" placeholder="Fark (TL)" value="${fark}" step="0.01" data-field="fark">
-            <input type="url" placeholder="Resim linki (opsiyonel)" value="${img}" data-field="img">
-            <button type="button" class="remove-btn" title="Sil">✕</button>
-        `;
+function resetForm() {
+productForm.reset();
+imagePreview.style.display = 'none';
+imageInfoStatus.textContent = '';
+variantsList.innerHTML = '';
+updateVariantsEmpty();
+editingId = null;
+formTitle.textContent = '➕ Yeni Ürün Ekle';
+submitBtn.textContent = 'Ürünü Kaydet';
+cancelEditBtn.style.display = 'none';
+}
 
-        row.querySelector('.remove-btn').addEventListener('click', () => {
-            row.remove();
-            updateVariantsEmpty();
-        });
+cancelEditBtn.addEventListener('click', resetForm);
 
-        variantsList.appendChild(row);
-        updateVariantsEmpty();
-    }
+productForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+submitBtn.disabled = true;
+submitBtn.textContent = 'Kaydediliyor...';
 
-    function updateVariantsEmpty() {
-        const hasVariants = variantsList.children.length > 0;
-        variantsEmpty.style.display = hasVariants ? 'none' : 'block';
-    }
+try {
+const name = document.getElementById('product-name').value.trim();
+const price = Number(document.getElementById('product-price').value);
+const category = document.getElementById('product-category').value;
+const description = document.getElementById('product-desc').value.trim();
+const tag = document.getElementById('product-tag').value;
+const imageUrl = imageInput.value.trim();
 
-    addVariantBtn.addEventListener('click', () => {
-        createVariantRow();
-    });
+const variants = [];
+variantsList.querySelectorAll('.variant-row').forEach((row) => {
+const ad = row.querySelector('[data-field="ad"]').value.trim();
+const fark = Number(row.querySelector('[data-field="fark"]').value) || 0;
+const img = row.querySelector('[data-field="img"]').value.trim();
+if (ad) variants.push({ ad, fark, img });
+});
 
-    // ============================================================
-    // ÜRÜN EKLE
-    // ============================================================
-    productForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Kaydediliyor...';
+const data = { name, price, category, description, tag, image: imageUrl, variants };
 
-        try {
-            const name = document.getElementById('product-name').value.trim();
-            const price = Number(document.getElementById('product-price').value);
-            const category = document.getElementById('product-category').value;
-            const description = document.getElementById('product-desc').value.trim();
-            const tag = document.getElementById('product-tag').value;
-            const imageUrl = imageInput.value.trim();
+if (editingId) {
+await updateDoc(doc(db, 'products', editingId), data);
+showMessage(mainMessage, '✅ Ürün güncellendi!', 'success');
+} else {
+data.createdAt = serverTimestamp();
+await addDoc(collection(db, 'products'), data);
+showMessage(mainMessage, '✅ Ürün eklendi!', 'success');
+}
 
-            // Varyantları topla
-            const variants = [];
-            variantsList.querySelectorAll('.variant-row').forEach((row) => {
-                const ad = row.querySelector('[data-field="ad"]').value.trim();
-                const fark = Number(row.querySelector('[data-field="fark"]').value) || 0;
-                const img = row.querySelector('[data-field="img"]').value.trim();
-                if (ad) {
-                    variants.push({ ad, fark, img });
-                }
-            });
+resetForm();
+} catch (error) {
+showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
+} finally {
+submitBtn.disabled = false;
+submitBtn.textContent = editingId ? 'Güncelle' : 'Ürünü Kaydet';
+}
+});
 
-            await addDoc(collection(db, 'products'), {
-                name, price, category, description, tag,
-                image: imageUrl,
-                variants: variants,
-                createdAt: serverTimestamp()
-            });
+function loadProducts() {
+const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+onSnapshot(q, (snapshot) => {
+productList.innerHTML = '';
+productCount.textContent = snapshot.size;
 
-            showMessage(mainMessage, '✅ Ürün başarıyla eklendi!', 'success');
-            productForm.reset();
-            imagePreview.style.display = 'none';
-            imageInfoStatus.textContent = '';
-            variantsList.innerHTML = '';
-            updateVariantsEmpty();
+if (snapshot.empty) {
+productList.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz ürün eklenmemiş.</p>';
+return;
+}
 
-        } catch (error) {
-            showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Ürünü Kaydet';
-        }
-    });
+snapshot.forEach((docSnap) => {
+const p = docSnap.data();
+const item = document.createElement('div');
+item.className = 'product-item';
+const imgSrc = p.image || 'https://vitaltr.github.io/images/logo.png';
+const variantCount = (p.variants && p.variants.length) || 0;
+const variantBadge = variantCount > 0 ? `<span class="variant-badge">🎨 ${variantCount} özellik</span>` : '';
+item.innerHTML = `
+<img src="${imgSrc}" alt="${p.name}" onerror="this.src='https://vitaltr.github.io/images/logo.png'">
+<div class="info">
+<h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
+<p>${p.category} — ${p.description || 'Açıklama yok'}</p>
+${variantBadge}
+</div>
+<div style="text-align:right;">
+<div class="price">${p.price} TL</div>
+<button class="btn-edit" data-id="${docSnap.id}">Düzenle</button>
+<button class="btn-danger" data-id="${docSnap.id}">Sil</button>
+</div>
+`;
+productList.appendChild(item);
+});
 
-    // ============================================================
-    // ÜRÜNLERİ LİSTELE
-    // ============================================================
-    function loadProducts() {
-        const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-        onSnapshot(q, (snapshot) => {
-            productList.innerHTML = '';
-            productCount.textContent = snapshot.size;
+productList.querySelectorAll('.btn-edit').forEach((btn) => {
+btn.addEventListener('click', (e) => {
+const id = e.target.getAttribute('data-id');
+const product = window.productsCache[id];
+if (!product) return;
 
-            if (snapshot.empty) {
-                productList.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz ürün eklenmemiş.</p>';
-                return;
-            }
+editingId = id;
+formTitle.textContent = '✏️ Ürünü Düzenle';
+submitBtn.textContent = 'Güncelle';
+cancelEditBtn.style.display = 'block';
 
-            snapshot.forEach((docSnap) => {
-                const p = docSnap.data();
-                const item = document.createElement('div');
-                item.className = 'product-item';
-                const imgSrc = p.image || 'https://via.placeholder.com/60';
-                const variantCount = (p.variants && p.variants.length) || 0;
-                const variantBadge = variantCount > 0 ? `<span class="variant-badge">🎨 ${variantCount} özellik</span>` : '';
-                item.innerHTML = `
-                    <img src="${imgSrc}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60'">
-                    <div class="info">
-                        <h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
-                        <p>${p.category} — ${p.description || 'Açıklama yok'}</p>
-                        ${variantBadge}
-                    </div>
-                    <div style="text-align:right;">
-                        <div class="price">${p.price} TL</div>
-                        <button class="btn-danger delete-btn" data-id="${docSnap.id}" style="margin-top:6px;">Sil</button>
-                    </div>
-                `;
-                productList.appendChild(item);
-            });
+document.getElementById('product-name').value = product.name || '';
+document.getElementById('product-price').value = product.price || '';
+document.getElementById('product-category').value = product.category || '';
+document.getElementById('product-desc').value = product.description || '';
+document.getElementById('product-tag').value = product.tag || '';
+imageInput.value = product.image || '';
+if (product.image) {
+imagePreview.src = product.image;
+imagePreview.style.display = 'block';
+}
 
-            productList.querySelectorAll('.delete-btn').forEach((btn) => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    if (confirm('Bu ürünü silmek istediğinden emin misin?')) {
-                        try {
-                            await deleteDoc(doc(db, 'products', id));
-                            showMessage(mainMessage, '🗑️ Ürün silindi.', 'info');
-                        } catch (error) {
-                            showMessage(mainMessage, '❌ Silme hatası: ' + error.message, 'error');
-                        }
-                    }
-                });
-            });
-        }, (error) => {
-            productList.innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.message + '</p>';
-        });
-    }
+variantsList.innerHTML = '';
+updateVariantsEmpty();
+if (product.variants && product.variants.length > 0) {
+product.variants.forEach(v => createVariantRow(v.ad, v.fark, v.img || ''));
+}
+
+window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+});
+
+productList.querySelectorAll('.btn-danger').forEach((btn) => {
+btn.addEventListener('click', async (e) => {
+const id = e.target.getAttribute('data-id');
+if (confirm('Bu ürünü silmek istediğinden emin misin?')) {
+try {
+await deleteDoc(doc(db, 'products', id));
+showMessage(mainMessage, '🗑️ Ürün silindi.', 'info');
+} catch (error) {
+showMessage(mainMessage, '❌ Silme hatası: ' + error.message, 'error');
+}
+}
+});
+});
+}, (error) => {
+productList.innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.message + '</p>';
+});
+}
+
+window.productsCache = {};
+onSnapshot(query(collection(db, 'products')), (snapshot) => {
+snapshot.forEach(d => { window.productsCache[d.id] = d.data(); });
+});
 </script>
 </body>
 </html>
