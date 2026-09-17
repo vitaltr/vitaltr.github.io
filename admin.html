@@ -26,6 +26,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn-logout:hover{background:#dc3545;color:#fff}
 .btn-cancel{background:#6c757d;color:#fff;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;border:none;width:100%;margin-top:10px}
 .btn-cancel:hover{background:#5a6268}
+.btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer}
+.btn-detay{background:#2563eb;color:#fff}
+.btn-detay:hover{background:#1d4ed8}
+.btn-pdf{background:#8b5cf6;color:#fff}
+.btn-pdf:hover{background:#7c3aed}
+.btn-tamamla{background:#10b981;color:#fff}
+.btn-tamamla:hover{background:#059669}
+.btn-sil-sm{background:#dc3545;color:#fff}
+.btn-sil-sm:hover{background:#c82333}
 #admin-screen{display:none}
 .header{background:#fff;padding:16px 20px;border-bottom:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .header h1{font-size:20px}
@@ -39,6 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#4285f4}
 .form-group textarea{resize:vertical;min-height:80px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .image-preview{margin-top:10px;max-width:200px;border-radius:8px;border:1px solid #ddd;display:none}
 .image-info{font-size:13px;color:#666;margin-top:6px}
 .image-info.ok{color:#28a745;font-weight:600}
@@ -77,18 +87,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .siparis-durum.yeni{background:#fef3c7;color:#d97706}
 .siparis-durum.tamamlandi{background:#d1fae5;color:#059669}
 .siparis-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer}
-.btn-detay{background:#2563eb;color:#fff}
-.btn-detay:hover{background:#1d4ed8}
-.btn-pdf{background:#8b5cf6;color:#fff}
-.btn-pdf:hover{background:#7c3aed}
-.btn-tamamla{background:#10b981;color:#fff}
-.btn-tamamla:hover{background:#059669}
-.btn-sil-sm{background:#dc3545;color:#fff}
-.btn-sil-sm:hover{background:#c82333}
 .detay-box{background:#f8fafc;padding:12px;border-radius:8px;margin-top:8px;font-size:13px;line-height:1.6}
 .detay-box strong{color:#334155}
-@media(max-width:500px){.form-row{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}.variant-row{grid-template-columns:1fr}.variant-row .remove-btn{width:100%}}
+.kategori-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #eee}
+.kategori-item:last-child{border-bottom:none}
+.kategori-item .kategori-icon{font-size:24px;width:40px;text-align:center}
+.kategori-item .kategori-info{flex:1}
+.kategori-item .kategori-info h4{font-size:15px;margin-bottom:2px}
+.kategori-item .kategori-info .slug{font-size:12px;color:#94a3b8;font-family:monospace}
+.kategori-item .kategori-actions{display:flex;gap:6px}
+.kategori-form-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:16px}
+.kategori-form-row .form-group{flex:1;margin-bottom:0}
+.kategori-form-row .form-group.kucuk{flex:0 0 100px}
+.kategori-form-row button{height:42px;padding:0 20px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}.form-row-3{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}.variant-row{grid-template-columns:1fr}.variant-row .remove-btn{width:100%}.kategori-form-row{flex-direction:column}.kategori-form-row .form-group.kucuk{flex:1}.kategori-form-row button{width:100%}}
 </style>
 </head>
 <body>
@@ -118,6 +130,26 @@ Google ile Giriş Yap
 <div class="container">
 <div id="main-message" class="message"></div>
 
+<!-- KATEGORİ YÖNETİMİ -->
+<div class="card">
+<h2>📂 Kategori Yönetimi (<span id="kategori-count">0</span>)</h2>
+<div class="kategori-form-row">
+<div class="form-group kucuk">
+<label>İkon</label>
+<input type="text" id="kategori-ikon" placeholder="💻" maxlength="4" value="📦">
+</div>
+<div class="form-group">
+<label>Kategori Adı</label>
+<input type="text" id="kategori-ad" placeholder="Örn: Elektronik">
+</div>
+<button id="kategori-ekle-btn" class="btn btn-primary" style="width:auto">+ Ekle</button>
+</div>
+<div id="kategori-listesi">
+<p style="color:#666;text-align:center;padding:20px;">Kategoriler yükleniyor...</p>
+</div>
+</div>
+
+<!-- SİPARİŞLER -->
 <div class="card">
 <h2>📋 Siparişler (<span id="siparis-count">0</span>)</h2>
 <div id="siparis-listesi">
@@ -125,6 +157,7 @@ Google ile Giriş Yap
 </div>
 </div>
 
+<!-- YENİ ÜRÜN EKLE -->
 <div class="card">
 <h2 id="form-title">➕ Yeni Ürün Ekle</h2>
 <form id="product-form">
@@ -141,11 +174,6 @@ Google ile Giriş Yap
 <label for="product-category">Kategori *</label>
 <select id="product-category" required>
 <option value="">Seçiniz...</option>
-<option value="elektronik">Elektronik</option>
-<option value="kablo">Kablo</option>
-<option value="motor">Motor</option>
-<option value="sensor">Sensör</option>
-<option value="aksesuar">Aksesuar</option>
 </select>
 </div>
 </div>
@@ -183,6 +211,7 @@ Google ile Giriş Yap
 </form>
 </div>
 
+<!-- MEVCUT ÜRÜNLER -->
 <div class="card">
 <h2>📦 Mevcut Ürünler (<span id="product-count">0</span>)</h2>
 <div id="product-list" class="loading">Yükleniyor...</div>
@@ -193,7 +222,7 @@ Google ile Giriş Yap
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
@@ -227,15 +256,29 @@ const productCount = document.getElementById('product-count');
 const variantsList = document.getElementById('variants-list');
 const variantsEmpty = document.getElementById('variants-empty');
 const addVariantBtn = document.getElementById('add-variant-btn');
+const kategoriListesi = document.getElementById('kategori-listesi');
+const kategoriCount = document.getElementById('kategori-count');
+const kategoriAd = document.getElementById('kategori-ad');
+const kategoriIkon = document.getElementById('kategori-ikon');
+const kategoriEkleBtn = document.getElementById('kategori-ekle-btn');
+const productCategorySelect = document.getElementById('product-category');
 
 let variantCounter = 0;
 let editingId = null;
 let siparislerCache = {};
+let kategoriler = [];
+let kategoriDuzenleId = null;
 
 function showMessage(el, text, type) {
 el.textContent = text;
 el.className = 'message ' + type;
 setTimeout(() => { el.className = 'message'; }, 4000);
+}
+
+function slugify(text) {
+return text.toString().toLowerCase()
+.replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+.replace(/\s+/g,'-').replace(/[^\w\-]+/g,'').replace(/\-\-+/g,'-').replace(/^-+|-+$/g,'');
 }
 
 document.getElementById('google-login-btn').addEventListener('click', async () => {
@@ -245,7 +288,7 @@ try { await signInWithPopup(auth, provider); } catch (error) { showMessage(login
 
 document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 if (user) {
 if (user.email !== ADMIN_EMAIL) {
 showMessage(loginMessage, '❌ Bu hesap admin değil!', 'error');
@@ -256,6 +299,8 @@ loginScreen.style.display = 'none';
 adminScreen.style.display = 'block';
 document.getElementById('user-email').textContent = user.email;
 document.getElementById('user-photo').src = user.photoURL || '';
+await ilkKurulumKontrol();
+loadKategoriler();
 loadProducts();
 loadOrders();
 } else {
@@ -264,6 +309,140 @@ adminScreen.style.display = 'none';
 }
 });
 
+// İlk kurulum: kategoriler boşsa varsayılanları ekle
+async function ilkKurulumKontrol() {
+const snap = await getDocs(collection(db, 'categories'));
+if (snap.empty) {
+const varsayilan = [
+{ ad: 'Elektronik', ikon: '💻' },
+{ ad: 'Kablo', ikon: '🔌' },
+{ ad: 'Motor', ikon: '⚙️' },
+{ ad: 'Sensör', ikon: '📡' },
+{ ad: 'Aksesuar', ikon: '🎒' }
+];
+for (const k of varsayilan) {
+await addDoc(collection(db, 'categories'), {
+ad: k.ad,
+ikon: k.ikon,
+slug: slugify(k.ad),
+createdAt: serverTimestamp()
+});
+}
+console.log('✅ Varsayılan kategoriler eklendi');
+}
+}
+
+// KATEGORİ YÖNETİMİ
+function loadKategoriler() {
+const q = query(collection(db, 'categories'), orderBy('createdAt', 'asc'));
+onSnapshot(q, (snapshot) => {
+kategoriler = [];
+kategoriListesi.innerHTML = '';
+kategoriCount.textContent = snapshot.size;
+
+if (snapshot.empty) {
+kategoriListesi.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz kategori yok.</p>';
+} else {
+snapshot.forEach((docSnap) => {
+const k = docSnap.data();
+kategoriler.push({ id: docSnap.id, ...k });
+const item = document.createElement('div');
+item.className = 'kategori-item';
+item.innerHTML = `
+<div class="kategori-icon">${k.ikon || '📦'}</div>
+<div class="kategori-info">
+<h4>${k.ad}</h4>
+<div class="slug">slug: ${k.slug}</div>
+</div>
+<div class="kategori-actions">
+<button class="btn-sm btn-edit" data-edit="${docSnap.id}">Düzenle</button>
+<button class="btn-sm btn-sil-sm" data-sil="${docSnap.id}">Sil</button>
+</div>
+`;
+kategoriListesi.appendChild(item);
+});
+
+// Düzenle butonları
+kategoriListesi.querySelectorAll('[data-edit]').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const id = e.target.getAttribute('data-edit');
+const k = kategoriler.find(x => x.id === id);
+if (!k) return;
+kategoriAd.value = k.ad;
+kategoriIkon.value = k.ikon || '📦';
+kategoriDuzenleId = id;
+kategoriEkleBtn.textContent = '💾 Güncelle';
+kategoriAd.focus();
+});
+});
+
+// Sil butonları
+kategoriListesi.querySelectorAll('[data-sil]').forEach(btn => {
+btn.addEventListener('click', async (e) => {
+const id = e.target.getAttribute('data-sil');
+const k = kategoriler.find(x => x.id === id);
+if (!k) return;
+
+// Bu kategoride ürün var mı kontrol et
+const urunSnap = await getDocs(query(collection(db, 'products'), where('category', '==', k.slug)));
+if (!urunSnap.empty) {
+showMessage(mainMessage, `⚠️ Bu kategoride ${urunSnap.size} ürün var. Önce onları başka kategoriye taşıyın.`, 'error');
+return;
+}
+
+if (!confirm(`"${k.ad}" kategorisini silmek istediğinden emin misin?`)) return;
+try {
+await deleteDoc(doc(db, 'categories', id));
+showMessage(mainMessage, '🗑️ Kategori silindi.', 'info');
+} catch (err) {
+showMessage(mainMessage, '❌ Hata: ' + err.message, 'error');
+}
+});
+});
+}
+
+// Ürün formundaki kategori dropdown'ını güncelle
+productCategorySelect.innerHTML = '<option value="">Seçiniz...</option>';
+kategoriler.forEach(k => {
+const opt = document.createElement('option');
+opt.value = k.slug;
+opt.textContent = `${k.ikon || '📦'} ${k.ad}`;
+productCategorySelect.appendChild(opt);
+});
+});
+}
+
+kategoriEkleBtn.addEventListener('click', async () => {
+const ad = kategoriAd.value.trim();
+const ikon = kategoriIkon.value.trim() || '📦';
+if (!ad) { showMessage(mainMessage, '⚠️ Kategori adı gerekli', 'error'); return; }
+const slug = slugify(ad);
+if (!slug) { showMessage(mainMessage, '⚠️ Geçersiz kategori adı', 'error'); return; }
+
+try {
+if (kategoriDuzenleId) {
+await updateDoc(doc(db, 'categories', kategoriDuzenleId), { ad, ikon, slug });
+showMessage(mainMessage, '✅ Kategori güncellendi!', 'success');
+kategoriDuzenleId = null;
+kategoriEkleBtn.textContent = '+ Ekle';
+} else {
+// Aynı slug var mı kontrol et
+const mevcut = kategoriler.find(k => k.slug === slug);
+if (mevcut) {
+showMessage(mainMessage, '⚠️ Bu isimde kategori zaten var', 'error');
+return;
+}
+await addDoc(collection(db, 'categories'), { ad, ikon, slug, createdAt: serverTimestamp() });
+showMessage(mainMessage, '✅ Kategori eklendi!', 'success');
+}
+kategoriAd.value = '';
+kategoriIkon.value = '📦';
+} catch (err) {
+showMessage(mainMessage, '❌ Hata: ' + err.message, 'error');
+}
+});
+
+// RESİM ÖNİZLEME
 imageInput.addEventListener('input', (e) => {
 const url = e.target.value.trim();
 imagePreview.style.display = 'none';
