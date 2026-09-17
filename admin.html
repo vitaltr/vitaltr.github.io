@@ -1,158 +1,513 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>ADMIN</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITALSHOP — Admin Paneli</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
 
-<style>
-body{font-family:Arial;padding:20px;background:#f4f6f8}
-.box{background:#fff;padding:10px;margin:10px 0;border-radius:10px}
-input,textarea{width:100%;padding:8px;margin:5px 0}
-button{padding:6px;border:none;border-radius:6px;cursor:pointer}
-.green{background:#2ecc71;color:#fff}
-.red{background:#e74c3c;color:#fff}
-.blue{background:#3498db;color:#fff}
-</style>
+        /* Giriş Ekranı */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        #login-screen h1 { font-size: 28px; margin-bottom: 10px; }
+        #login-screen p { color: #666; margin-bottom: 30px; }
+
+        .btn {
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-google {
+            background: #fff;
+            color: #333;
+            border: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin: 0 auto;
+        }
+        .btn-google:hover { background: #f8f9fa; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .btn-primary { background: #4285f4; color: #fff; width: 100%; }
+        .btn-primary:hover { background: #3367d6; }
+        .btn-primary:disabled { background: #a0c0f0; cursor: not-allowed; }
+        .btn-danger { background: #dc3545; color: #fff; padding: 6px 14px; font-size: 13px; border-radius: 6px; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-logout {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-logout:hover { background: #dc3545; color: #fff; }
+
+        /* Admin Paneli */
+        #admin-screen { display: none; }
+        .header {
+            background: #fff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 { font-size: 20px; }
+        .header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #666; }
+        .header img { width: 32px; height: 32px; border-radius: 50%; }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .image-info {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+        .image-info.warning { color: #dc3545; font-weight: 600; }
+        .image-info.ok { color: #28a745; font-weight: 600; }
+
+        /* Mesajlar */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
+
+        /* Ürün Listesi */
+        .product-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        .product-item:last-child { border-bottom: none; }
+        .product-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+            flex-shrink: 0;
+        }
+        .product-item .info { flex: 1; min-width: 0; }
+        .product-item .info h4 { font-size: 15px; margin-bottom: 4px; }
+        .product-item .info p { font-size: 13px; color: #666; word-break: break-word; }
+        .product-item .price { font-weight: 700; color: #4285f4; font-size: 15px; }
+
+        .loading { text-align: center; padding: 20px; color: #666; }
+
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .product-item { flex-wrap: wrap; }
+        }
+    </style>
 </head>
-
 <body>
 
-<h2>ADMIN</h2>
-
-<input type="password" id="pass">
-<button class="blue" onclick="login()">Giriş</button>
-
-<div id="panel" style="display:none">
-
-<!-- CAT -->
-<div class="box">
-<h3>Kategori</h3>
-<input id="cat">
-<button class="green" onclick="addCat()">Ekle</button>
+<!-- GİRİŞ EKRANI -->
+<div id="login-screen">
+    <div>
+        <h1>🔧 VITALSHOP Admin</h1>
+        <p>Yönetici paneli — devam etmek için giriş yapın</p>
+        <button id="google-login-btn" class="btn btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+            Google ile Giriş Yap
+        </button>
+        <div id="login-message" class="message"></div>
+    </div>
 </div>
 
-<!-- PRODUCT -->
-<div class="box">
-<h3>Ürün</h3>
+<!-- ADMIN EKRANI -->
+<div id="admin-screen">
+    <div class="header">
+        <h1>🔧 Admin Paneli</h1>
+        <div class="user-info">
+            <img id="user-photo" src="" alt="">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="btn-logout">Çıkış</button>
+        </div>
+    </div>
 
-<select id="catSelect"></select>
+    <div class="container">
+        <div id="main-message" class="message"></div>
 
-<input id="name">
-<input id="price">
-<input id="img">
-<input id="stock">
-<textarea id="desc"></textarea>
+        <!-- ÜRÜN EKLEME FORMU -->
+        <div class="card">
+            <h2>➕ Yeni Ürün Ekle</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="product-name">Ürün Adı *</label>
+                    <input type="text" id="product-name" placeholder="Örn: PCB Kart" required>
+                </div>
 
-<button class="green" onclick="addProduct()">Ekle</button>
-<button class="blue" onclick="updateProduct()" id="upd" style="display:none">Güncelle</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-price">Fiyat (TL) *</label>
+                        <input type="number" id="product-price" placeholder="100" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Kategori *</label>
+                        <select id="product-category" required>
+                            <option value="">Seçiniz...</option>
+                            <option value="elektronik">Elektronik</option>
+                            <option value="kablo">Kablo</option>
+                            <option value="motor">Motor</option>
+                            <option value="sensor">Sensör</option>
+                            <option value="aksesuar">Aksesuar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-desc">Açıklama</label>
+                    <textarea id="product-desc" placeholder="Kısa ürün açıklaması"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-tag">Etiket (opsiyonel)</label>
+                    <select id="product-tag">
+                        <option value="">Etiket yok</option>
+                        <option value="⭐ Popüler">⭐ Popüler</option>
+                        <option value="🔥 Çok Satan">🔥 Çok Satan</option>
+                        <option value="✨ Yeni">✨ Yeni</option>
+                        <option value="💰 İndirim">💰 İndirim</option>
+                        <option value="💎 Premium">💎 Premium</option>
+                        <option value="💸 Fırsat">💸 Fırsat</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-image">Ürün Resmi (max 700 KB)</label>
+                    <input type="file" id="product-image" accept="image/jpeg,image/jpg,image/webp,image/png">
+                    <img id="image-preview" class="image-preview" alt="Önizleme">
+                    <div id="image-info" class="image-info"></div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary">Ürünü Kaydet</button>
+            </form>
+        </div>
+
+        <!-- ÜRÜN LİSTESİ -->
+        <div class="card">
+            <h2>📦 Mevcut Ürünler (<span id="product-count">0</span>)</h2>
+            <div id="product-list" class="loading">Yükleniyor...</div>
+        </div>
+    </div>
 </div>
 
-<!-- LIST -->
-<div id="list"></div>
+<!-- FIREBASE SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+        getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+        getFirestore, collection, addDoc, deleteDoc, doc,
+        onSnapshot, query, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-</div>
+    // ============================================================
+    // 👇👇👇 BURAYA KENDİ firebaseConfig KODUNU YAPIŞTIR 👇👇👇
+    // ============================================================
+    const firebaseConfig = {
+    apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
+    authDomain: "vitalweb-c3290.firebaseapp.com",
+    projectId: "vitalweb-c3290",
+    storageBucket: "vitalweb-c3290.firebasestorage.app",
+    messagingSenderId: "204342714119",
+    appId: "1:204342714119:web:7d61d6f853eef3d790efa2",
+    measurementId: "G-C2ZL944MPR"
+    };
+    // ============================================================
+    // 👆👆👆 BURAYA KADAR 👆👆👆
+    // ============================================================
 
-<script>
-let store = JSON.parse(localStorage.getItem("store")) || {categories:[]};
-let edit={c:-1,p:-1};
+    // Firebase başlat
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-function login(){
-if(pass.value==="1234"){
-panel.style.display="block";
-render();
-}
-}
+    // ============================================================
+    // SADECE BU E-POSTA ADMİN OLABİLİR
+    // ============================================================
+    const ADMIN_EMAIL = "vitalekelektronik@gmail.com";
+    // ============================================================
 
-/* SAVE */
-function save(){
-localStorage.setItem("store",JSON.stringify(store));
-render();
-}
+    // Elementler
+    const loginScreen = document.getElementById('login-screen');
+    const adminScreen = document.getElementById('admin-screen');
+    const loginMessage = document.getElementById('login-message');
+    const mainMessage = document.getElementById('main-message');
+    const productForm = document.getElementById('product-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const imageInput = document.getElementById('product-image');
+    const imagePreview = document.getElementById('image-preview');
+    const imageInfo = document.getElementById('image-info');
+    const productList = document.getElementById('product-list');
+    const productCount = document.getElementById('product-count');
 
-/* CAT */
-function addCat(){
-store.categories.push({
-id:Date.now(),
-name:cat.value,
-products:[]
-});
-save();
-}
+    // Mesaj göster
+    function showMessage(el, text, type) {
+        el.textContent = text;
+        el.className = 'message ' + type;
+        setTimeout(() => { el.className = 'message'; }, 4000);
+    }
 
-/* PRODUCT */
-function addProduct(){
-let i=catSelect.value;
+    // ============================================================
+    // GİRİŞ / ÇIKIŞ
+    // ============================================================
+    document.getElementById('google-login-btn').addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            showMessage(loginMessage, 'Giriş hatası: ' + error.message, 'error');
+        }
+    });
 
-store.categories[i].products.push({
-id:Date.now(),
-name:name.value,
-price:price.value,
-img:img.value,
-stock:stock.value,
-desc:desc.value
-});
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        signOut(auth);
+    });
 
-save();
-}
+    // Oturum durumunu izle
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Admin mi kontrol et
+            if (user.email !== ADMIN_EMAIL) {
+                showMessage(loginMessage, '❌ Bu hesap admin değil! Sadece yetkili e-posta giriş yapabilir.', 'error');
+                signOut(auth);
+                return;
+            }
+            // Giriş başarılı
+            loginScreen.style.display = 'none';
+            adminScreen.style.display = 'block';
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-photo').src = user.photoURL || '';
+            loadProducts();
+        } else {
+            loginScreen.style.display = 'flex';
+            adminScreen.style.display = 'none';
+        }
+    });
 
-/* EDIT */
-function editProduct(ci,pi){
-let p=store.categories[ci].products[pi];
+    // ============================================================
+    // RESİM ÖNİZLEME + BOYUT KONTROLÜ
+    // ============================================================
+    imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        imagePreview.style.display = 'none';
+        imageInfo.textContent = '';
+        imageInfo.className = 'image-info';
 
-name.value=p.name;
-price.value=p.price;
-img.value=p.img;
-stock.value=p.stock;
-desc.value=p.desc;
+        if (!file) return;
 
-edit={c:ci,p:pi};
-upd.style.display="block";
-}
+        const sizeKB = (file.size / 1024).toFixed(0);
 
-function updateProduct(){
-let p=store.categories[edit.c].products[edit.p];
+        // Boyut kontrolü
+        if (file.size > 700 * 1024) {
+            imageInfo.textContent = `❌ Resim çok büyük: ${sizeKB} KB (max 700 KB). Lütfen küçültün.`;
+            imageInfo.className = 'image-info warning';
+            imageInput.value = '';
+            return;
+        }
 
-p.name=name.value;
-p.price=price.value;
-p.img=img.value;
-p.stock=stock.value;
-p.desc=desc.value;
+        // Boyut uyarısı
+        if (file.size > 500 * 1024) {
+            imageInfo.textContent = `⚠️ Resim ${sizeKB} KB — sınıra yakın ama kabul edilebilir.`;
+            imageInfo.className = 'image-info warning';
+        } else {
+            imageInfo.textContent = `✅ Resim boyutu: ${sizeKB} KB (uygun)`;
+            imageInfo.className = 'image-info ok';
+        }
 
-upd.style.display="none";
-save();
-}
+        // Önizleme göster
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            imagePreview.src = ev.target.result;
+            imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
 
-/* DELETE */
-function delProduct(ci,pi){
-store.categories[ci].products.splice(pi,1);
-save();
-}
+    // ============================================================
+    // RESMİ BASE64'E ÇEVİR
+    // ============================================================
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
 
-/* RENDER */
-function render(){
+    // ============================================================
+    // ÜRÜN EKLE
+    // ============================================================
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Kaydediliyor...';
 
-catSelect.innerHTML="";
-store.categories.forEach((c,i)=>{
-catSelect.innerHTML+=`<option value="${i}">${c.name}</option>`;
-});
+        try {
+            const name = document.getElementById('product-name').value.trim();
+            const price = Number(document.getElementById('product-price').value);
+            const category = document.getElementById('product-category').value;
+            const description = document.getElementById('product-desc').value.trim();
+            const tag = document.getElementById('product-tag').value;
+            const imageFile = imageInput.files[0];
 
-let list=document.getElementById("list");
-list.innerHTML="";
+            let imageBase64 = '';
+            if (imageFile) {
+                imageBase64 = await fileToBase64(imageFile);
+            }
 
-store.categories.forEach((c,ci)=>{
-list.innerHTML+=`<h3>${c.name}</h3>`;
+            await addDoc(collection(db, 'products'), {
+                name,
+                price,
+                category,
+                description,
+                tag,
+                image: imageBase64,
+                createdAt: serverTimestamp()
+            });
 
-c.products.forEach((p,pi)=>{
-list.innerHTML+=`
-<div class="box">
-<b>${p.name}</b>
-<button class="blue" onclick="editProduct(${ci},${pi})">Edit</button>
-<button class="red" onclick="delProduct(${ci},${pi})">Sil</button>
-</div>`;
-});
-});
-}
+            showMessage(mainMessage, '✅ Ürün başarıyla eklendi!', 'success');
+            productForm.reset();
+            imagePreview.style.display = 'none';
+            imageInfo.textContent = '';
+
+        } catch (error) {
+            showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Ürünü Kaydet';
+        }
+    });
+
+    // ============================================================
+    // ÜRÜNLERİ LİSTELE (Canlı)
+    // ============================================================
+    function loadProducts() {
+        const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+        onSnapshot(q, (snapshot) => {
+            productList.innerHTML = '';
+            productCount.textContent = snapshot.size;
+
+            if (snapshot.empty) {
+                productList.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz ürün eklenmemiş.</p>';
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const p = docSnap.data();
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.innerHTML = `
+                    <img src="${p.image || 'https://via.placeholder.com/60'}" alt="${p.name}">
+                    <div class="info">
+                        <h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
+                        <p>${p.category} — ${p.description || 'Açıklama yok'}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="price">${p.price} TL</div>
+                        <button class="btn btn-danger delete-btn" data-id="${docSnap.id}" style="margin-top:6px;">Sil</button>
+                    </div>
+                `;
+                productList.appendChild(item);
+            });
+
+            // Silme butonlarını bağla
+            productList.querySelectorAll('.delete-btn').forEach((btn) => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm('Bu ürünü silmek istediğinden emin misin?')) {
+                        try {
+                            await deleteDoc(doc(db, 'products', id));
+                            showMessage(mainMessage, '🗑️ Ürün silindi.', 'info');
+                        } catch (error) {
+                            showMessage(mainMessage, '❌ Silme hatası: ' + error.message, 'error');
+                        }
+                    }
+                });
+            });
+        }, (error) => {
+            productList.innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.message + '</p>';
+        });
+    }
 </script>
-
 </body>
 </html>
