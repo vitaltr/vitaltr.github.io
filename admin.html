@@ -66,6 +66,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .product-item .info .variant-badge{display:inline-block;background:#eff6ff;color:#2563eb;font-size:11px;padding:2px 8px;border-radius:10px;margin-top:4px}
 .product-item .price{font-weight:700;color:#4285f4;font-size:15px}
 .loading{text-align:center;padding:20px;color:#666}
+.siparis-item{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px}
+.siparis-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.siparis-no{font-weight:700;font-size:15px;color:#2563eb}
+.siparis-tarih{font-size:12px;color:#64748b}
+.siparis-musteri{font-size:14px;color:#334155;margin-bottom:4px}
+.siparis-toplam{font-weight:700;font-size:16px;color:#2563eb}
+.siparis-durum{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.siparis-durum.yeni{background:#fef3c7;color:#d97706}
+.siparis-durum.tamamlandi{background:#d1fae5;color:#059669}
+.siparis-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer}
+.btn-detay{background:#2563eb;color:#fff}
+.btn-detay:hover{background:#1d4ed8}
+.btn-tamamla{background:#10b981;color:#fff}
+.btn-tamamla:hover{background:#059669}
+.btn-sil-sm{background:#dc3545;color:#fff}
+.btn-sil-sm:hover{background:#c82333}
+.detay-box{background:#f8fafc;padding:12px;border-radius:8px;margin-top:8px;font-size:13px;line-height:1.6}
+.detay-box strong{color:#334155}
 @media(max-width:500px){.form-row{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}.variant-row{grid-template-columns:1fr}.variant-row .remove-btn{width:100%}}
 </style>
 </head>
@@ -95,6 +114,13 @@ Google ile Giriş Yap
 
 <div class="container">
 <div id="main-message" class="message"></div>
+
+<div class="card">
+<h2>📋 Siparişler (<span id="siparis-count">0</span>)</h2>
+<div id="siparis-listesi">
+<p style="color:#666;text-align:center;padding:20px;">Siparişler yükleniyor...</p>
+</div>
+</div>
 
 <div class="card">
 <h2 id="form-title">➕ Yeni Ürün Ekle</h2>
@@ -143,14 +169,12 @@ Google ile Giriş Yap
 <img id="image-preview" class="image-preview" alt="Önizleme">
 <div id="image-info-status" class="image-info"></div>
 </div>
-
 <div class="variants-section">
 <h3>🎨 Ürün Özellikleri (Varyantlar) <span>Opsiyonel</span></h3>
 <div id="variants-list"></div>
 <div class="variants-empty" id="variants-empty">Henüz özellik eklenmedi.</div>
 <button type="button" id="add-variant-btn" class="btn-add-variant">+ Yeni Özellik Ekle</button>
 </div>
-
 <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top:20px;">Ürünü Kaydet</button>
 <button type="button" id="cancel-edit-btn" class="btn-cancel" style="display:none;">İptal</button>
 </form>
@@ -203,6 +227,7 @@ const addVariantBtn = document.getElementById('add-variant-btn');
 
 let variantCounter = 0;
 let editingId = null;
+let siparislerCache = {};
 
 function showMessage(el, text, type) {
 el.textContent = text;
@@ -229,6 +254,7 @@ adminScreen.style.display = 'block';
 document.getElementById('user-email').textContent = user.email;
 document.getElementById('user-photo').src = user.photoURL || '';
 loadProducts();
+loadOrders();
 } else {
 loginScreen.style.display = 'flex';
 adminScreen.style.display = 'none';
@@ -299,7 +325,6 @@ productForm.addEventListener('submit', async (e) => {
 e.preventDefault();
 submitBtn.disabled = true;
 submitBtn.textContent = 'Kaydediliyor...';
-
 try {
 const name = document.getElementById('product-name').value.trim();
 const price = Number(document.getElementById('product-price').value);
@@ -307,7 +332,6 @@ const category = document.getElementById('product-category').value;
 const description = document.getElementById('product-desc').value.trim();
 const tag = document.getElementById('product-tag').value;
 const imageUrl = imageInput.value.trim();
-
 const variants = [];
 variantsList.querySelectorAll('.variant-row').forEach((row) => {
 const ad = row.querySelector('[data-field="ad"]').value.trim();
@@ -315,9 +339,7 @@ const fark = Number(row.querySelector('[data-field="fark"]').value) || 0;
 const img = row.querySelector('[data-field="img"]').value.trim();
 if (ad) variants.push({ ad, fark, img });
 });
-
 const data = { name, price, category, description, tag, image: imageUrl, variants };
-
 if (editingId) {
 await updateDoc(doc(db, 'products', editingId), data);
 showMessage(mainMessage, '✅ Ürün güncellendi!', 'success');
@@ -326,7 +348,6 @@ data.createdAt = serverTimestamp();
 await addDoc(collection(db, 'products'), data);
 showMessage(mainMessage, '✅ Ürün eklendi!', 'success');
 }
-
 resetForm();
 } catch (error) {
 showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
@@ -341,12 +362,10 @@ const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
 onSnapshot(q, (snapshot) => {
 productList.innerHTML = '';
 productCount.textContent = snapshot.size;
-
 if (snapshot.empty) {
 productList.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz ürün eklenmemiş.</p>';
 return;
 }
-
 snapshot.forEach((docSnap) => {
 const p = docSnap.data();
 const item = document.createElement('div');
@@ -355,7 +374,7 @@ const imgSrc = p.image || 'https://vitaltr.github.io/images/logo.png';
 const variantCount = (p.variants && p.variants.length) || 0;
 const variantBadge = variantCount > 0 ? `<span class="variant-badge">🎨 ${variantCount} özellik</span>` : '';
 item.innerHTML = `
-<img src="${imgSrc}" alt="${p.name}" onerror="this.src='https://vitaltr.github.io/images/logo.png'">
+<img src="${imgSrc}" alt="${p.name}" onerror="this.onerror=null;this.src='https://vitaltr.github.io/images/logo.png'">
 <div class="info">
 <h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
 <p>${p.category} — ${p.description || 'Açıklama yok'}</p>
@@ -369,18 +388,17 @@ ${variantBadge}
 `;
 productList.appendChild(item);
 });
-
 productList.querySelectorAll('.btn-edit').forEach((btn) => {
 btn.addEventListener('click', (e) => {
 const id = e.target.getAttribute('data-id');
-const product = window.productsCache[id];
+onSnapshot(query(collection(db, 'products')), (snap) => {
+let product = null;
+snap.forEach(d => { if (d.id === id) product = d.data(); });
 if (!product) return;
-
 editingId = id;
 formTitle.textContent = '✏️ Ürünü Düzenle';
 submitBtn.textContent = 'Güncelle';
 cancelEditBtn.style.display = 'block';
-
 document.getElementById('product-name').value = product.name || '';
 document.getElementById('product-price').value = product.price || '';
 document.getElementById('product-category').value = product.category || '';
@@ -391,17 +409,15 @@ if (product.image) {
 imagePreview.src = product.image;
 imagePreview.style.display = 'block';
 }
-
 variantsList.innerHTML = '';
 updateVariantsEmpty();
 if (product.variants && product.variants.length > 0) {
 product.variants.forEach(v => createVariantRow(v.ad, v.fark, v.img || ''));
 }
-
 window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 });
-
+});
 productList.querySelectorAll('.btn-danger').forEach((btn) => {
 btn.addEventListener('click', async (e) => {
 const id = e.target.getAttribute('data-id');
@@ -420,10 +436,106 @@ productList.innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.
 });
 }
 
-window.productsCache = {};
-onSnapshot(query(collection(db, 'products')), (snapshot) => {
-snapshot.forEach(d => { window.productsCache[d.id] = d.data(); });
+function loadOrders() {
+const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+onSnapshot(q, (snapshot) => {
+const container = document.getElementById('siparis-listesi');
+const count = document.getElementById('siparis-count');
+count.textContent = snapshot.size;
+if (snapshot.empty) {
+container.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Henüz sipariş yok.</p>';
+return;
+}
+siparislerCache = {};
+container.innerHTML = '';
+snapshot.forEach((docSnap) => {
+const s = docSnap.data();
+siparislerCache[docSnap.id] = s;
+const tarih = s.tarih ? new Date(s.tarih).toLocaleString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+const musteriAd = s.musteri && s.musteri.ad ? s.musteri.ad : 'İsimsiz';
+const durum = s.durum || 'yeni';
+const durumText = durum === 'tamamlandi' ? '✓ Tamamlandı' : '🆕 Yeni';
+const item = document.createElement('div');
+item.className = 'siparis-item';
+item.innerHTML = `
+<div class="siparis-header">
+<div>
+<div class="siparis-no">${s.siparisNo || '—'}</div>
+<div class="siparis-tarih">${tarih}</div>
+</div>
+<span class="siparis-durum ${durum}">${durumText}</span>
+</div>
+<div class="siparis-musteri">👤 ${musteriAd}</div>
+<div class="siparis-toplam">💰 ${s.toplam || 0} TL</div>
+<div class="siparis-actions">
+<button class="btn-sm btn-detay" data-detay="${docSnap.id}">📄 Detay</button>
+${durum === 'yeni' ? `<button class="btn-sm btn-tamamla" data-tamamla="${docSnap.id}">✓ Tamamlandı</button>` : ''}
+<button class="btn-sm btn-sil-sm" data-sil="${docSnap.id}">🗑️ Sil</button>
+</div>
+<div id="detay-${docSnap.id}" style="display:none"></div>
+`;
+container.appendChild(item);
 });
+container.querySelectorAll('[data-detay]').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const id = e.target.getAttribute('data-detay');
+const s = siparislerCache[id];
+const detayBox = document.getElementById('detay-' + id);
+if (!s || !detayBox) return;
+if (detayBox.style.display === 'block') { detayBox.style.display = 'none'; return; }
+const m = s.musteri || {};
+const musteriHTML = `
+<div class="detay-box">
+<strong>👤 Müşteri Bilgileri:</strong><br>
+${m.ad ? 'Ad: ' + m.ad + '<br>' : ''}
+${m.tel ? 'Tel: ' + m.tel + '<br>' : ''}
+${m.email ? 'E-posta: ' + m.email + '<br>' : ''}
+${m.adres ? 'Adres: ' + m.adres + '<br>' : ''}
+${m.sehir ? 'Şehir: ' + m.sehir + '<br>' : ''}
+${m.ilce ? 'İlçe: ' + m.ilce + '<br>' : ''}
+${m.posta ? 'Posta Kodu: ' + m.posta + '<br>' : ''}
+</div>
+`;
+const urunlerHTML = (s.urunler || []).map((u, i) => `
+<div style="padding:8px 0;border-bottom:1px solid #e2e8f0">
+<strong>${i+1}. ${u.ad}</strong>
+${u.variant ? '<br>🎨 ' + u.variant : ''}
+${u.note ? '<br>📝 ' + u.note : ''}
+<br>${u.fiyat} TL × ${u.adet} = ${u.fiyat * u.adet} TL
+</div>
+`).join('');
+detayBox.innerHTML = musteriHTML + '<div style="margin-top:10px"><strong>📦 Ürünler:</strong>' + urunlerHTML + '</div><div style="margin-top:10px;text-align:right;font-size:16px;font-weight:700;color:#2563eb">TOPLAM: ' + s.toplam + ' TL</div>';
+detayBox.style.display = 'block';
+});
+});
+container.querySelectorAll('[data-tamamla]').forEach(btn => {
+btn.addEventListener('click', async (e) => {
+const id = e.target.getAttribute('data-tamamla');
+if (!confirm('Bu siparişi tamamlandı olarak işaretlemek istiyor musun?')) return;
+try {
+await updateDoc(doc(db, 'orders', id), { durum: 'tamamlandi' });
+showMessage(mainMessage, '✅ Sipariş tamamlandı olarak işaretlendi.', 'success');
+} catch (err) {
+showMessage(mainMessage, '❌ Hata: ' + err.message, 'error');
+}
+});
+});
+container.querySelectorAll('[data-sil]').forEach(btn => {
+btn.addEventListener('click', async (e) => {
+const id = e.target.getAttribute('data-sil');
+if (!confirm('Bu siparişi silmek istediğinden emin misin?')) return;
+try {
+await deleteDoc(doc(db, 'orders', id));
+showMessage(mainMessage, '🗑️ Sipariş silindi.', 'info');
+} catch (err) {
+showMessage(mainMessage, '❌ Hata: ' + err.message, 'error');
+}
+});
+});
+}, (error) => {
+document.getElementById('siparis-listesi').innerHTML = '<p style="color:#dc3545;padding:20px;">Hata: ' + error.message + '</p>';
+});
+}
 </script>
 </body>
 </html>
