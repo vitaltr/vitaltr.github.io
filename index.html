@@ -14,6 +14,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .slide-up{animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.95);backdrop-filter:blur(20px);color:#fff;padding:14px 28px;border-radius:16px;z-index:1000;animation:slideUp .4s cubic-bezier(.22,1,.36,1);box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:90%;text-align:center;font-size:14px;font-weight:500;border:1px solid rgba(255,255,255,.08);display:none}
 .toast.show{display:block}
+
+/* DENEME UYARISI - KOMPAKT */
+.uyari-overlay{position:fixed;inset:0;background:rgba(15,23,42,.92);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.uyari-overlay.show{display:flex}
+.uyari-box{background:#fff;border-radius:20px;max-width:400px;width:100%;padding:20px;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:fadeInUp .3s ease;max-height:92vh;overflow-y:auto}
+.uyari-logo{font-size:22px;font-weight:800;color:#1e293b;letter-spacing:-.5px;line-height:1.1}
+.uyari-logo span{color:#2563eb}
+.uyari-sub{font-size:10px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.uyari-icon{font-size:36px;line-height:1;margin:8px 0}
+.uyari-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:10px}
+.uyari-text{font-size:13px;color:#334155;line-height:1.4;margin-bottom:10px;text-align:left;background:#f8fafc;padding:12px;border-radius:10px;border-left:3px solid #2563eb}
+.uyari-text p{margin-bottom:6px;line-height:1.4}
+.uyari-text p:last-child{margin-bottom:0}
+.uyari-text b{color:#2563eb}
+.uyari-list{list-style:none;font-size:13px;color:#334155;line-height:1.5;margin:8px 0;text-align:left}
+.uyari-list li{margin-bottom:2px}
+.uyari-uyari{background:#fef2f2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;margin:8px 0;text-align:center}
+.uyari-ekstra{font-size:12px;color:#64748b;line-height:1.4;margin:8px 0;text-align:left}
+.uyari-ekstra div{margin-bottom:2px}
+.uyari-contact{background:#eff6ff;padding:8px 12px;border-radius:8px;margin:10px 0;font-size:13px;color:#1e40af;font-weight:600;text-align:center}
+.uyari-checkbox{display:flex;align-items:center;gap:8px;background:#f8fafc;padding:8px 10px;border-radius:8px;margin:10px 0;cursor:pointer;user-select:none;font-size:12px;color:#475569}
+.uyari-checkbox input{width:16px;height:16px;cursor:pointer;accent-color:#2563eb;flex-shrink:0}
+.uyari-btn{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 8px 20px rgba(37,99,235,.3);transition:.2s}
+.uyari-btn:active{transform:scale(.97)}
+.uyari-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
 .header-gradient{background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);position:sticky;top:0;z-index:50}
 .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .header-left{display:flex;align-items:center;gap:12px;cursor:pointer}
@@ -26,18 +52,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .cart-badge{position:absolute;top:-4px;right:-4px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border-radius:50%;min-width:22px;height:22px;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700;border:2px solid #1e293b;padding:0 4px}
 .cart-badge.show{display:flex}
 main{max-width:1200px;margin:0 auto;padding:16px}
-
-/* MASAÜSTÜ KATEGORİLER */
 .kategoriler{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:16px}
 .kategori-btn{padding:10px 24px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;border:2px solid transparent;cursor:pointer;background:transparent;color:#475569;border-color:#e5e7eb;transition:.3s}
 .kategori-btn.aktif{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border-color:transparent;box-shadow:0 4px 20px rgba(37,99,235,.3)}
-
-/* MOBİL KATEGORİ BUTONU */
 .mobil-kategori-btn{display:none;width:100%;padding:12px 16px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:600;color:#334155;cursor:pointer;align-items:center;justify-content:space-between;margin-bottom:16px;transition:.2s}
 .mobil-kategori-btn:active{transform:scale(.98);background:#f8fafc}
 .mobil-kategori-btn .ok{color:#94a3b8;font-size:12px;margin-left:8px}
-
-/* MOBİL KATEGORİ MODAL */
 .kategori-modal{position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(20px);z-index:200;display:none}
 .kategori-modal.show{display:block}
 .kategori-modal-sheet{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:32px 32px 0 0;z-index:201;display:none;animation:slideUp .4s cubic-bezier(.22,1,.36,1);max-height:80vh;overflow-y:auto;padding-bottom:20px}
@@ -138,8 +158,6 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 .musteri-form .input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .musteri-form input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;font-family:inherit}
 .musteri-form input:focus{outline:none;border-color:#2563eb}
-
-/* MOBİL GÖRÜNÜM */
 @media(max-width:768px){
 .kategoriler{display:none !important}
 .mobil-kategori-btn{display:flex !important}
@@ -150,6 +168,36 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 </style>
 </head>
 <body>
+
+<!-- DENEME UYARISI -->
+<div id="uyari-overlay" class="uyari-overlay">
+<div class="uyari-box">
+<div class="uyari-logo">VITAL<span>SHOP</span></div>
+<div class="uyari-sub">Premium Electronics</div>
+<div class="uyari-icon">⚠️</div>
+<div class="uyari-title">DENEME SİTESİ</div>
+<div class="uyari-text">
+<p>Bu site <b>deneme amaçlıdır.</b> Gerçek ödeme alınmaz, gerçek sipariş işleme alınmaz.</p>
+</div>
+<ul class="uyari-list">
+<li>✅ İnceleyebilirsiniz</li>
+<li>✅ Sepete ekleyebilirsiniz</li>
+<li>✅ PDF alabilirsiniz</li>
+</ul>
+<div class="uyari-uyari">⚠️ Ödeme yapmayınız!</div>
+<div class="uyari-ekstra">
+<div>💬 Önerileriniz bizim için değerli</div>
+<div>⭐ Geri bildiriminiz bize yol gösterir</div>
+<div>🚀 Sitemiz sürekli geliştiriliyor</div>
+</div>
+<div class="uyari-contact">📞 0551 063 13 43</div>
+<label class="uyari-checkbox">
+<input type="checkbox" id="uyari-onay">
+<span>Okudum, anladım</span>
+</label>
+<button class="uyari-btn" id="uyari-btn" onclick="uyariKapat()" disabled>ANLADIM, DEVAM ET</button>
+</div>
+</div>
 
 <header class="header-gradient">
 <div class="header-inner">
@@ -173,23 +221,18 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 </header>
 
 <main>
-<!-- MOBİL KATEGORİ BUTONU -->
 <button class="mobil-kategori-btn" id="mobil-kategori-btn" onclick="kategoriModalAc()">
 <span id="mobil-kategori-label">📂 Tümü</span>
 <span class="ok">▼</span>
 </button>
-
-<!-- MASAÜSTÜ KATEGORİLER -->
 <div class="kategoriler" id="kategoriler">
 <button class="kategori-btn aktif" onclick="filtrele('tum',this)">🏠 Tümü</button>
 </div>
-
 <div id="urun-listesi" class="product-grid">
 <div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b">Ürünler yükleniyor...</div>
 </div>
 </main>
 
-<!-- MOBİL KATEGORİ MODAL -->
 <div id="kategori-modal" class="kategori-modal" onclick="kategoriModalKapat()"></div>
 <div id="kategori-modal-sheet" class="kategori-modal-sheet">
 <div class="kategori-modal-handle"></div>
@@ -329,7 +372,6 @@ return '';
 
 function logoUrl() { return 'https://vitaltr.github.io/images/logo.png'; }
 
-// KATEGORİLERİ YÜKLE
 const kq = query(collection(db, 'categories'), orderBy('createdAt', 'asc'));
 onSnapshot(kq, (snapshot) => {
 kategoriler = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -339,7 +381,6 @@ renderKategoriModal();
 console.error('Kategori hatası:', error);
 });
 
-// ÜRÜNLERİ YÜKLE
 const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
 onSnapshot(q, (snapshot) => {
 urunler = snapshot.docs.map((d) => {
@@ -377,15 +418,11 @@ container.appendChild(btn);
 function renderKategoriModal() {
 const container = document.getElementById('kategori-modal-listesi');
 container.innerHTML = '';
-
-// Tümü
 const tumu = document.createElement('div');
 tumu.className = 'kategori-modal-item' + (aktifKategori === 'tum' ? ' selected' : '');
 tumu.innerHTML = `<div class="emoji">🏠</div><div class="ad">Tümü</div><div class="tik">✓</div>`;
 tumu.onclick = () => { kategoriSec('tum', '🏠 Tümü'); };
 container.appendChild(tumu);
-
-// Kategoriler
 kategoriler.forEach(k => {
 const item = document.createElement('div');
 item.className = 'kategori-modal-item' + (aktifKategori === k.slug ? ' selected' : '');
@@ -433,7 +470,6 @@ function filtrele(kat, btn) {
 aktifKategori = kat;
 document.querySelectorAll('.kategori-btn').forEach(b => b.classList.remove('aktif'));
 if (btn) btn.classList.add('aktif');
-// Mobil label'ı da güncelle
 const k = kategoriler.find(x => x.slug === kat);
 const label = kat === 'tum' ? '🏠 Tümü' : (k ? `${k.ikon || '📦'} ${k.ad}` : '📂 Tümü');
 document.getElementById('mobil-kategori-label').textContent = label;
@@ -485,11 +521,9 @@ if (!u) return;
 modalData.index = index;
 modalData.adet = 1;
 modalData.variant = 0;
-
 document.getElementById('modal-title').textContent = u.ad;
 document.getElementById('modal-desc').textContent = u.aciklama || 'Açıklama yok';
 document.getElementById('modal-img').src = u.img;
-
 const badgeEl = document.getElementById('modal-badge');
 if (u.badge) {
 badgeEl.textContent = u.badge;
@@ -498,7 +532,6 @@ badgeEl.style.display = 'block';
 } else {
 badgeEl.style.display = 'none';
 }
-
 const vSec = document.getElementById('variants-section');
 const vList = document.getElementById('variants-list');
 if (u.variants && u.variants.length > 0) {
@@ -512,14 +545,12 @@ return `<div class="variant-option ${sel}" onclick="variantSec(${i})"><div class
 vSec.style.display = 'none';
 vList.innerHTML = '';
 }
-
 const ekF = u.variants && u.variants.length > 0 ? (Number(u.variants[0].fark) || 0) : 0;
 document.getElementById('modal-fiyat').textContent = (u.fiyat + ekF) + ' TL';
 document.getElementById('modal-adet').textContent = '1';
 document.getElementById('modal-note').value = '';
 document.getElementById('note-counter').textContent = '0 / 200';
 document.getElementById('note-counter').className = 'note-counter';
-
 document.getElementById('product-modal').classList.add('show');
 document.getElementById('product-sheet').classList.add('show');
 document.body.style.overflow = 'hidden';
@@ -647,13 +678,11 @@ window.sepetiTemizle = sepetiTemizle;
 function sepetGuncelle() {
 const toplamF = sepet.reduce((s, i) => s + i.fiyat * i.adet, 0);
 const toplamA = sepet.reduce((s, i) => s + i.adet, 0);
-
 document.getElementById('header-total').textContent = toplamF + ' TL';
 document.getElementById('sepet-ozet').textContent = sepet.length > 0 ? `${sepet.length} ürün` : 'Sepet boş';
 document.getElementById('sepet-adet').textContent = `${toplamA} ürün`;
 document.getElementById('sepet-toplam').textContent = toplamF + ' TL';
 document.getElementById('sepet-toplam-modal').textContent = toplamF + ' TL';
-
 const badge = document.getElementById('cart-count');
 const badgeM = document.getElementById('cart-count-mobil');
 const goster = toplamA > 0 ? (toplamA > 9 ? '9+' : toplamA) : '0';
@@ -665,10 +694,8 @@ badgeM.textContent = goster;
 badge.classList.remove('show');
 badgeM.textContent = '0';
 }
-
 const liste = document.getElementById('sepet-listesi');
 document.getElementById('sepet-baslik-adet').textContent = `(${toplamA})`;
-
 if (sepet.length === 0) {
 liste.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:40px 20px"><div style="font-size:60px;margin-bottom:12px">🛒</div><p style="font-weight:600;color:#64748b">Sepetiniz boş</p></div>`;
 } else {
@@ -706,15 +733,12 @@ return `#${y}${m}${dd}-${r}`;
 
 async function pdfIndir() {
 if (sepet.length === 0) { showToast('😊 Sepet boş!', 'red'); return; }
-
 if (siparisKaydedildi) {
-showToast('⚠️ Bu sipariş zaten kaydedildi. Yeni sipariş için sepeti temizleyin veya sayfayı yenileyin.', 'orange');
+showToast('⚠️ Bu sipariş zaten kaydedildi.', 'orange');
 return;
 }
-
 const pdfBtn = document.getElementById('pdf-btn');
 if (pdfBtn) { pdfBtn.disabled = true; pdfBtn.style.opacity = '0.5'; pdfBtn.style.cursor = 'not-allowed'; }
-
 const mAd = document.getElementById('m-ad').value.trim();
 const mTel = document.getElementById('m-tel').value.trim();
 const mSehir = document.getElementById('m-sehir').value.trim();
@@ -722,13 +746,10 @@ const mIlce = document.getElementById('m-ilce').value.trim();
 const mPosta = document.getElementById('m-posta').value.trim();
 const mEmail = document.getElementById('m-email').value.trim();
 const mAdres = document.getElementById('m-adres').value.trim();
-
 siparisNo = siparisNoUret();
 showToast('⏳ PDF hazırlanıyor...', 'blue');
-
 const toplamF = sepet.reduce((s, i) => s + i.fiyat * i.adet, 0);
 const tarih = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-
 const musteriSatirlari = [];
 if (mAd) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Ad Soyad:</span><span style="font-weight:600;color:#1e293b">${mAd}</span></div>`);
 if (mTel) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Telefon:</span><span style="font-weight:600;color:#1e293b">${mTel}</span></div>`);
@@ -737,11 +758,9 @@ if (mAdres) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span
 if (mSehir) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Şehir:</span><span style="font-weight:600;color:#1e293b">${mSehir}</span></div>`);
 if (mIlce) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">İlçe:</span><span style="font-weight:600;color:#1e293b">${mIlce}</span></div>`);
 if (mPosta) musteriSatirlari.push(`<div style="display:flex;padding:4px 0"><span style="color:#64748b;width:120px">Posta Kodu:</span><span style="font-weight:600;color:#1e293b">${mPosta}</span></div>`);
-
 const musteriHTML = musteriSatirlari.length > 0
 ? `<div style="background:#f8fafc;padding:16px;border-radius:12px;margin-bottom:20px"><h3 style="font-size:14px;font-weight:700;color:#334155;margin-bottom:10px">👤 MÜŞTERİ BİLGİLERİ</h3>${musteriSatirlari.join('')}</div>`
 : '';
-
 const content = document.createElement('div');
 content.style.padding = '30px';
 content.style.fontFamily = 'Arial, sans-serif';
@@ -776,7 +795,6 @@ ${item.note ? `<div style="font-size:12px;color:#d97706;background:#fffbeb;paddi
 Teşekkür ederiz! 🙏<br>VITALSHOP - Premium Electronics
 </div>
 `;
-
 try {
 await addDoc(collection(db, 'orders'), {
 siparisNo: siparisNo,
@@ -800,7 +818,6 @@ showToast('🛒 Sepet boşaltıldı. Yeni sipariş verebilirsiniz.', 'green');
 console.error('❌ Sipariş kayıt hatası:', err);
 showToast('⚠️ Sipariş kaydedilemedi ama PDF indirilecek', 'orange');
 }
-
 html2pdf().set({
 margin: 15,
 filename: `vital-shop-${siparisNo.replace('#','')}.pdf`,
@@ -819,6 +836,41 @@ if (pdfBtn) { pdfBtn.disabled = false; pdfBtn.style.opacity = '1'; pdfBtn.style.
 });
 }
 window.pdfIndir = pdfIndir;
+
+// ============================================================
+// DENEME UYARISI
+// ============================================================
+function uyariGoster() {
+if (sessionStorage.getItem('uyariGordu') === '1') return;
+const overlay = document.getElementById('uyari-overlay');
+if (!overlay) return;
+overlay.classList.add('show');
+document.body.style.overflow = 'hidden';
+}
+
+function uyariKapat() {
+const overlay = document.getElementById('uyari-overlay');
+if (!overlay) return;
+overlay.classList.remove('show');
+document.body.style.overflow = '';
+sessionStorage.setItem('uyariGordu', '1');
+}
+window.uyariKapat = uyariKapat;
+
+document.addEventListener('DOMContentLoaded', () => {
+const checkbox = document.getElementById('uyari-onay');
+const btn = document.getElementById('uyari-btn');
+if (checkbox && btn) {
+checkbox.addEventListener('change', () => {
+if (checkbox.checked) {
+btn.disabled = false;
+} else {
+btn.disabled = true;
+}
+});
+}
+uyariGoster();
+});
 
 document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape') { kapatDetay(); kapatSepet(); kategoriModalKapat(); }
