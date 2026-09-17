@@ -672,6 +672,13 @@ durum: 'yeni',
 createdAt: serverTimestamp()
 });
 siparisKaydedildi = true;
+  // Sipariş başarıyla kaydedildi → sepeti otomatik boşalt
+setTimeout(() => {
+    sepet = [];
+    siparisKaydedildi = false;
+    siparisNo = '';
+    sepetGuncelle();
+}, 200);
 console.log('✅ Sipariş kaydedildi:', siparisNo);
 } catch (err) {
 console.error('❌ Sipariş kayıt hatası:', err);
