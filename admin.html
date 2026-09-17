@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; color: #1a1a1a; min-height: 100vh; }
-        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; }
         #login-screen h1 { font-size: 28px; margin-bottom: 10px; }
@@ -23,6 +23,10 @@
         .btn-danger:hover { background: #c82333; }
         .btn-logout { background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 8px 16px; font-size: 14px; border-radius: 6px; cursor: pointer; }
         .btn-logout:hover { background: #dc3545; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; padding: 8px 16px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-add-variant { background: #10b981; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; width: 100%; margin-top: 10px; }
+        .btn-add-variant:hover { background: #059669; }
 
         #admin-screen { display: none; }
         .header { background: #fff; padding: 16px 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
@@ -53,12 +57,24 @@
         .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
         .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
 
+        /* Varyant Bölümü */
+        .variants-section { border: 2px dashed #d1d5db; border-radius: 12px; padding: 16px; margin-top: 16px; background: #fafbfc; }
+        .variants-section h3 { font-size: 15px; margin-bottom: 12px; color: #374151; display: flex; justify-content: space-between; align-items: center; }
+        .variants-section h3 span { font-size: 12px; font-weight: normal; color: #6b7280; }
+        .variant-row { display: grid; grid-template-columns: 2fr 1fr 2fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .variant-row input { padding: 8px 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; }
+        .variant-row input:focus { outline: none; border-color: #4285f4; }
+        .variant-row .remove-btn { background: #ef4444; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .variant-row .remove-btn:hover { background: #dc2626; }
+        .variants-empty { text-align: center; color: #9ca3af; font-size: 13px; padding: 12px; }
+
         .product-item { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
         .product-item:last-child { border-bottom: none; }
         .product-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: #f0f0f0; flex-shrink: 0; }
         .product-item .info { flex: 1; min-width: 0; }
         .product-item .info h4 { font-size: 15px; margin-bottom: 4px; }
         .product-item .info p { font-size: 13px; color: #666; word-break: break-word; }
+        .product-item .info .variant-badge { display: inline-block; background: #eff6ff; color: #2563eb; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
         .product-item .price { font-weight: 700; color: #4285f4; font-size: 15px; }
 
         .loading { text-align: center; padding: 20px; color: #666; }
@@ -66,6 +82,8 @@
         @media (max-width: 500px) {
             .form-row { grid-template-columns: 1fr; }
             .header { flex-direction: column; align-items: flex-start; }
+            .variant-row { grid-template-columns: 1fr; }
+            .variant-row .remove-btn { width: 100%; }
         }
     </style>
 </head>
@@ -106,7 +124,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="product-price">Fiyat (TL) *</label>
+                        <label for="product-price">Ana Fiyat (TL) *</label>
                         <input type="number" id="product-price" placeholder="100" min="0" step="0.01" required>
                     </div>
                     <div class="form-group">
@@ -141,14 +159,25 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="product-image">Resim Linki</label>
+                    <label for="product-image">Ana Resim Linki</label>
                     <input type="url" id="product-image" placeholder="https://vitaltr.github.io/images/urun.jpg">
                     <div class="image-info">💡 Resmi GitHub'daki <b>images/</b> klasörüne yükleyin, linkini buraya yapıştırın.</div>
                     <img id="image-preview" class="image-preview" alt="Önizleme">
                     <div id="image-info-status" class="image-info"></div>
                 </div>
 
-                <button type="submit" id="submit-btn" class="btn btn-primary">Ürünü Kaydet</button>
+                <!-- VARYANTLAR -->
+                <div class="variants-section">
+                    <h3>
+                        🎨 Ürün Özellikleri (Varyantlar)
+                        <span>Opsiyonel</span>
+                    </h3>
+                    <div id="variants-list"></div>
+                    <div class="variants-empty" id="variants-empty">Henüz özellik eklenmedi. Aşağıdaki butona tıklayarak ekleyin.</div>
+                    <button type="button" id="add-variant-btn" class="btn-add-variant">+ Yeni Özellik Ekle</button>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top: 20px;">Ürünü Kaydet</button>
             </form>
         </div>
 
@@ -167,24 +196,21 @@
     // ============================================================
     // 👇 BURAYA KENDİ firebaseConfig KODUNU YAPIŞTIR 👇
     // ============================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyCTHNBtLFn6UItQ9a0QkcSV1ybDVD4x5QU",
-    authDomain: "vitalweb-c3290.firebaseapp.com",
-    projectId: "vitalweb-c3290",
-    storageBucket: "vitalweb-c3290.firebasestorage.app",
-    messagingSenderId: "204342714119",
-    appId: "1:204342714119:web:7d61d6f853eef3d790efa2",
-    measurementId: "G-C2ZL944MPR"
-  };
-    // ============================================================
-    // 👆 BURAYA KADAR 👆
+    const firebaseConfig = {
+        apiKey: "BURAYA_API_KEY",
+        authDomain: "BURAYA_AUTH_DOMAIN",
+        projectId: "BURAYA_PROJECT_ID",
+        storageBucket: "BURAYA_STORAGE_BUCKET",
+        messagingSenderId: "BURAYA_SENDER_ID",
+        appId: "BURAYA_APP_ID"
+    };
     // ============================================================
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const ADMIN_EMAIL = "vitalelektronik@gmail.com";
+    const ADMIN_EMAIL = "vitalekelektronik@gmail.com";
 
     const loginScreen = document.getElementById('login-screen');
     const adminScreen = document.getElementById('admin-screen');
@@ -197,6 +223,11 @@
     const imageInfoStatus = document.getElementById('image-info-status');
     const productList = document.getElementById('product-list');
     const productCount = document.getElementById('product-count');
+    const variantsList = document.getElementById('variants-list');
+    const variantsEmpty = document.getElementById('variants-empty');
+    const addVariantBtn = document.getElementById('add-variant-btn');
+
+    let variantCounter = 0;
 
     function showMessage(el, text, type) {
         el.textContent = text;
@@ -204,6 +235,9 @@
         setTimeout(() => { el.className = 'message'; }, 4000);
     }
 
+    // ============================================================
+    // GİRİŞ / ÇIKIŞ
+    // ============================================================
     document.getElementById('google-login-btn').addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
         try {
@@ -235,7 +269,9 @@
         }
     });
 
-    // Resim linki önizleme
+    // ============================================================
+    // RESİM ÖNİZLEME
+    // ============================================================
     imageInput.addEventListener('input', (e) => {
         const url = e.target.value.trim();
         imagePreview.style.display = 'none';
@@ -250,7 +286,6 @@
             return;
         }
 
-        // Önizleme
         const img = new Image();
         img.onload = () => {
             imagePreview.src = url;
@@ -265,6 +300,43 @@
         img.src = url;
     });
 
+    // ============================================================
+    // VARYANT EKLEME
+    // ============================================================
+    function createVariantRow(ad = '', fark = '', img = '') {
+        variantCounter++;
+        const id = variantCounter;
+        const row = document.createElement('div');
+        row.className = 'variant-row';
+        row.dataset.variantId = id;
+        row.innerHTML = `
+            <input type="text" placeholder="Özellik adı (örn: Çift Katman)" value="${ad}" data-field="ad">
+            <input type="number" placeholder="Fark (TL)" value="${fark}" step="0.01" data-field="fark">
+            <input type="url" placeholder="Resim linki (opsiyonel)" value="${img}" data-field="img">
+            <button type="button" class="remove-btn" title="Sil">✕</button>
+        `;
+
+        row.querySelector('.remove-btn').addEventListener('click', () => {
+            row.remove();
+            updateVariantsEmpty();
+        });
+
+        variantsList.appendChild(row);
+        updateVariantsEmpty();
+    }
+
+    function updateVariantsEmpty() {
+        const hasVariants = variantsList.children.length > 0;
+        variantsEmpty.style.display = hasVariants ? 'none' : 'block';
+    }
+
+    addVariantBtn.addEventListener('click', () => {
+        createVariantRow();
+    });
+
+    // ============================================================
+    // ÜRÜN EKLE
+    // ============================================================
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
@@ -278,9 +350,21 @@
             const tag = document.getElementById('product-tag').value;
             const imageUrl = imageInput.value.trim();
 
+            // Varyantları topla
+            const variants = [];
+            variantsList.querySelectorAll('.variant-row').forEach((row) => {
+                const ad = row.querySelector('[data-field="ad"]').value.trim();
+                const fark = Number(row.querySelector('[data-field="fark"]').value) || 0;
+                const img = row.querySelector('[data-field="img"]').value.trim();
+                if (ad) {
+                    variants.push({ ad, fark, img });
+                }
+            });
+
             await addDoc(collection(db, 'products'), {
                 name, price, category, description, tag,
                 image: imageUrl,
+                variants: variants,
                 createdAt: serverTimestamp()
             });
 
@@ -288,6 +372,8 @@
             productForm.reset();
             imagePreview.style.display = 'none';
             imageInfoStatus.textContent = '';
+            variantsList.innerHTML = '';
+            updateVariantsEmpty();
 
         } catch (error) {
             showMessage(mainMessage, '❌ Hata: ' + error.message, 'error');
@@ -297,6 +383,9 @@
         }
     });
 
+    // ============================================================
+    // ÜRÜNLERİ LİSTELE
+    // ============================================================
     function loadProducts() {
         const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
         onSnapshot(q, (snapshot) => {
@@ -313,11 +402,14 @@
                 const item = document.createElement('div');
                 item.className = 'product-item';
                 const imgSrc = p.image || 'https://via.placeholder.com/60';
+                const variantCount = (p.variants && p.variants.length) || 0;
+                const variantBadge = variantCount > 0 ? `<span class="variant-badge">🎨 ${variantCount} özellik</span>` : '';
                 item.innerHTML = `
                     <img src="${imgSrc}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60'">
                     <div class="info">
                         <h4>${p.tag ? p.tag + ' ' : ''}${p.name}</h4>
                         <p>${p.category} — ${p.description || 'Açıklama yok'}</p>
+                        ${variantBadge}
                     </div>
                     <div style="text-align:right;">
                         <div class="price">${p.price} TL</div>
